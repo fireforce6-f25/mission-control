@@ -1,16 +1,16 @@
 # Sierra Method
 
-[![Build Status](https://github.com/fireforce6/template/actions/workflows/ci.yml/badge.svg)](https://github.com/fireforce6/template/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/fireforce6/template?label=Release)](https://github.com/fireforce6/template/releases/latest)
+[![Build Status](https://github.com/fireforce6/mission-operations/actions/workflows/ci.yml/badge.svg)](https://github.com/fireforce6/mission-operations/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/fireforce6/mission-operations?label=Release)](https://github.com/fireforce6/mission-operations/releases/latest)
 
 
-An [OML](https://github.com/opencaesar/oml)-based description for modeling and analyzing the Template project.
+An [OML](https://github.com/opencaesar/oml)-based description for modeling and analyzing the Mission Operations project.
 
 ## Clone
 
 ```bash
-git clone https://github.com/fireforce6/template.git
-cd template
+git clone https://github.com/fireforce6/mission-operations.git
+cd mission-operations
 ```
 
 ## Setup
@@ -93,7 +93,7 @@ Publish the OML dataset as an archive to Maven Local:
 The archive will be available at:
 
 ```bash
-ls ~/.m2/repository/io/github/fireforce6/template
+ls ~/.m2/repository/io/github/fireforce6/mission-operations
 ```
 
 ## License
