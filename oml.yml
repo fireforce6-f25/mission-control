@@ -1,7 +1,7 @@
 # Project's properties
 project:
-   title: Mission Operations
-   description: This is the mission-operations project
+   title: Mission Control
+   description: This is the mission-control project
    group: io.github.fireforce6
    version: 0.1.0
 
@@ -15,9 +15,9 @@ dependencies:
 
 # Project's datasets
 datasets:
-   mission-operations: # configured in fuseki.ttl
-      label: Mission Operations
-      description: The set of ontologies in this mission-operations project
-      iri: https://fireforce6.github.io/mission-operations/bundle
+   mission-control: # configured in fuseki.ttl
+      label: Mission Control
+      description: The set of ontologies in this mission-control project
+      iri: https://fireforce6.github.io/mission-control/bundle
       sources: [ 'src/oml' ]
       queries: src/sparql
