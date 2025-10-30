@@ -1,7 +1,7 @@
-# Sierra Method
+# Mission Control
 
-[![Build Status](https://github.com/fireforce6/mission-control/actions/workflows/ci.yml/badge.svg)](https://github.com/fireforce6/mission-control/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/fireforce6/mission-control?label=Release)](https://github.com/fireforce6/mission-control/releases/latest)
+[![Build Status](https://github.com/fireforce6-f25/mission-control/actions/workflows/ci.yml/badge.svg)](https://github.com/fireforce6-f25/mission-control/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/fireforce6-f25/mission-control?label=Release)](https://github.com/fireforce6-f25/mission-control/releases/latest)
 
 
 An [OML](https://github.com/opencaesar/oml)-based description for modeling and analyzing the Mission Control project.
