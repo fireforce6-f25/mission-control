@@ -1,0 +1,63 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+
+# === Virtual environment ===
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# === Django ===
+db.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+local_settings.py
+media/
+staticfiles/
+static/
+build/
+
+# === Migrations ===
+*/migrations/__pycache__/
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# === IDEs / Editors ===
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# === OS-specific ===
+.DS_Store
+Thumbs.db
+
+# === PyInstaller ===
+*.spec
+dist/
+build/
+
+# === Unit test / coverage ===
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# === Environment / secrets ===
+.env.local
+.env.production
+.env.dev

@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* any global rules below */
+html,body,#root { height:100%; }
+
+/* Custom toast notification styles */
+.toast-critical {
+  background-color: #ff3b3b !important;
+  color: white !important;
+}
+
+.toast-high {
+  background-color: #ff6b35 !important;
+  color: white !important;
+}
+
+.toast-medium {
+  background-color: #ffd93d !important;
+  color: #0a0e1a !important;
+}
+
+.toast-low {
+  background-color: #00d4ff !important;
+  color: #0a0e1a !important;
+}
+
+.toast-info {
+  background-color: #8b92a8 !important;
+  color: white !important;
+}
