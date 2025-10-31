@@ -3,7 +3,92 @@
 description <https://fireforce6.github.io/mission-control/description1#> as description1 {
 
 	uses <http://purl.org/dc/elements/1.1/> as dc
+    uses <https://fireforce6.github.io/sierra/requirement#> as requirement
+        uses <https://fireforce6.github.io/sierra/capability#> as capability
+    uses <https://fireforce6.github.io/sierra/base#> as base
   
-    /* REPLACE WITH YOUR DESCRIPTION CONTENT */
+    instance Operator : requirement:Stakeholder [
+        base:description "User of Mission Control Dashboard, Not Fighting Fires Live"
+    ]
 
+    instance FireFighter : requirement:Stakeholder [
+        base:description "User of Mission Control Dashboard, Fighting Fires Live"
+    ]
+
+    instance R1 : requirement:Requirement [
+        base:description "Real-Time Map"
+        base:expression "The system must display real-time fire and drone locations"
+        requirement:isExpressedBy Operator
+    ]
+
+    instance R2 : requirement:Requirement [
+        base:description "Critical Alerts"
+        base:expression "The system must show real-time critical alerts and notifications"
+        requirement:isExpressedBy Operator
+    ]
+
+
+    instance R3 : requirement:Requirement [
+        base:description "AI Warden Interface"
+        base:expression "The system must enable direct, smooth communication with AI Warden"
+        requirement:isExpressedBy Operator
+    ]
+
+    instance R4 : requirement:Requirement [
+        base:description "Adaptive User Experience"
+        base:expression "The system must provide resilient user interface for adverse field conditions"
+        requirement:isExpressedBy FireFighter
+
+    ]
+
+    instance R5 : requirement:Requirement [
+        base:description "Historical Views"
+        base:expression "Support views of historical time series data"
+        requirement:isExpressedBy Operator
+    ]
+
+    instance M1 : capability:Mission [
+        base:description "Allow Analysis of Fire at Any Point in Time"
+        capability:isDerivedFrom R1
+        capability:isDerivedFrom R5
+    ]
+
+    instance C1 : capability:Capability [
+        base:description "Enable view of fire state from specific time points"
+        capability:isRequiredBy M1
+    ]
+
+    instance M2 : capability:Mission [
+        base:description "Enable Real-Time Data Stream"
+        capability:isDerivedFrom R1
+        capability:isDerivedFrom R2
+        capability:isRequiredBy M1
+    ]
+
+    instance C2 : capability:Capability [
+        base:description "Constantly fetch live fire and drone updates"
+        capability:isRequiredBy M2
+    ]
+    
+    instance C3 : capability:Capability [
+        base:description "Constantly fetch new notifications"
+        capability:isRequiredBy M2
+    ]
+
+    instance M3 : capability:Mission [
+        base:description "Provide Responsive, Easy-to-Use Interface"
+        capability:isDerivedFrom R3
+        capability:isDerivedFrom R4
+    ]
+
+    instance C4 : capability:Capability [
+        base:description "Allow adjustment of dashboard color schemes"
+        capability:isRequiredBy M3
+    ]
+
+    instance C5 : capability:Capability [
+        base:description "Enable text-message like chat interface with warden"
+        capability:isRequiredBy M3
+    ]
+    
  }

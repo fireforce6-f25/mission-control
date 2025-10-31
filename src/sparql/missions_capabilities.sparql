@@ -1,0 +1,16 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX requirement: <https://fireforce6.github.io/sierra/requirement#>
+PREFIX capability: <https://fireforce6.github.io/sierra/capability#>
+
+PREFIX base: <https://fireforce6.github.io/sierra/base#>
+
+SELECT DISTINCT ?capabilityURI ?capabilityDescription ?subCapabilityURI ?subCapabilityDescription
+
+WHERE {
+	?capabilityURI a capability:Capability ;
+	base:description ?capabilityDescription .
+	OPTIONAL {
+		?capabilityURI capability:requires ?subCapabilityURI .
+		?subCapabilityURI base:description ?subCapabilityDescription
+	}
+}

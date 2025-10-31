@@ -9,7 +9,7 @@ An [OML](https://github.com/opencaesar/oml)-based description for modeling and a
 ## Clone
 
 ```bash
-git clone https://github.com/fireforce6/mission-control.git
+git clone https://github.com/fireforce6-25/mission-control.git
 cd mission-control
 ```
 
@@ -93,7 +93,7 @@ Publish the OML dataset as an archive to Maven Local:
 The archive will be available at:
 
 ```bash
-ls ~/.m2/repository/io/github/fireforce6/mission-control
+ls ~/.m2/repository/io/github/fireforce6-f25/mission-control
 ```
 
 ## License

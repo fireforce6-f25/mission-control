@@ -1,0 +1,12 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX requirement: <https://fireforce6.github.io/sierra/requirement#>
+PREFIX base: <https://fireforce6.github.io/sierra/base#>
+
+
+SELECT DISTINCT ?requirementURI ?description ?expression
+
+WHERE {
+	?requirementURI a requirement:Requirement ;
+		base:expression ?expression ;
+		base:description ?description .
+	}
