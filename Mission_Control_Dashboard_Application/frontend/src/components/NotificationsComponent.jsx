@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import Select from 'react-select';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchRecentNotifications } from '../api/apiClient';
 
@@ -23,6 +24,7 @@ const getSeverityLabel = (severity) => {
 const NotificationsComponent = () => {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState('all');
+  const [labelFilter, setLabelFilter] = useState([]);
 
   // Fetch notifications from cache (managed by WebSocketProvider)
   const { data = { notifications: [] } } = useQuery({
@@ -71,14 +73,32 @@ const NotificationsComponent = () => {
 
   const filteredNotifications = useMemo(() => {
     return data.notifications.filter(notif => {
-      if (filter === 'all') return true;
-      if (filter === 'unread') return !notif.acknowledged;
-      return notif.severity === filter;
+      // Severity / unread filter
+      if (filter !== 'all') {
+        if (filter === 'unread' && notif.acknowledged) return false;
+        if (filter !== 'unread' && notif.severity !== filter) return false;
+      }
+
+      // Label filter (multi-select): if none selected, pass all
+      if (labelFilter.length > 0) {
+        const notifLabels = notif.labels || [];
+        // at least one overlap
+        const has = notifLabels.some(l => labelFilter.includes(l));
+        if (!has) return false;
+      }
+
+      return true;
     });
-  }, [data.notifications, filter]);
+  }, [data.notifications, filter, labelFilter]);
 
   const unreadCount = useMemo(() => {
     return data.notifications.filter(n => !n.acknowledged).length;
+  }, [data.notifications]);
+
+  const availableLabels = useMemo(() => {
+    const s = new Set();
+    data.notifications.forEach(n => (n.labels || []).forEach(l => s.add(l)));
+    return Array.from(s);
   }, [data.notifications]);
 
   return (
@@ -103,6 +123,37 @@ const NotificationsComponent = () => {
             <option value="low">Low</option>
             <option value="info">Info</option>
           </select>
+
+            {/* Labels multi-select (react-select) */}
+            <div style={{ minWidth: 220 }}>
+              <Select
+                isMulti
+                isSearchable
+                options={availableLabels.map(l => ({ value: l, label: l }))}
+                value={availableLabels
+                  .map(l => ({ value: l, label: l }))
+                  .filter(opt => labelFilter.includes(opt.value))}
+                onChange={(selected) => setLabelFilter((selected || []).map(s => s.value))}
+                placeholder="Filter by labels…"
+                classNamePrefix="react-select"
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    backgroundColor: '#374151',
+                    borderColor: '#4b5563',
+                    minHeight: '38px'
+                  }),
+                  menu: (provided) => ({ ...provided, backgroundColor: '#111827' }),
+                  option: (provided, state) => ({
+                    ...provided,
+                    backgroundColor: state.isFocused ? '#1f2937' : '#111827',
+                    color: '#e5e7eb'
+                  }),
+                  multiValue: (provided) => ({ ...provided, backgroundColor: '#111827', color: '#ebe5e5ff' }),
+                  multiValueLabel: (provided) => ({ ...provided, color: '#e5e7eb', fontWeight: 500 }),
+                }}
+              />
+            </div>
 
           {/* Clear Read Button */}
           <button
@@ -211,6 +262,23 @@ const NotificationsComponent = () => {
                     }`}>
                       {notif.message}
                     </p>
+
+                    {/* Labels / Tags */}
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {(notif.labels || []).map((lbl) => (
+                        <span
+                          key={lbl}
+                          className="text-xs px-2 py-1 rounded-full"
+                          style={{
+                            backgroundColor: '#111827',
+                            color: '#e5e7eb',
+                            border: '1px solid rgba(255,255,255,0.04)'
+                          }}
+                        >
+                          {lbl}
+                        </span>
+                      ))}
+                    </div>
 
                     {/* Metadata */}
                     <div className="flex items-center gap-4 text-xs text-gray-500">

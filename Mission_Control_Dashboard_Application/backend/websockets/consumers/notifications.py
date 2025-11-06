@@ -20,8 +20,16 @@ def generate_notification():
         ("Wind speed alert: {speed} mph", "Weather Monitoring System"),
         ("New deployment to zone {zone}", "Drone Management System"),
     ]
-    
+
+    possible_labels = [
+        "Fire Update", "Weather Alert", "Plan Execution", "Drone Status", "Safety", "Maintenance"
+    ]
+
     template, source = random.choice(templates)
+    # pick 0..2 labels (but ensure at least 1)
+    num_labels = random.choice([1, 1, 2])
+    labels = random.sample(possible_labels, k=num_labels)
+
     return {
         "id": _notification_counter,
         "severity": random.choice(severities),
@@ -35,7 +43,8 @@ def generate_notification():
         "message": "Automated notification from monitoring system.",
         "timestamp": _now_ms(),
         "source": source,
-        "acknowledged": False
+        "acknowledged": False,
+        "labels": labels
     }
 
 class NotificationsConsumer(AsyncWebsocketConsumer):

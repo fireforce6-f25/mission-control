@@ -13,7 +13,8 @@ MOCK_NOTIFICATIONS = [
         "message": "Wind speeds have increased to 22 mph. Fire F-2 has grown 40% in the last 15 minutes.",
         "timestamp": now_ms - int(24*60*60*1000*0.9),
         "source": "Fire Detection System",
-        "acknowledged": True
+        "acknowledged": True,
+        "labels": ["Fire Update", "Safety"]
     },
     {
         "id": 2,
@@ -22,7 +23,8 @@ MOCK_NOTIFICATIONS = [
         "message": "Thermal cameras detected heat signature. Size: ~5 acres.",
         "timestamp": now_ms - int(24*60*60*1000*0.7),
         "source": "Fire Detection System",
-        "acknowledged": True
+        "acknowledged": True,
+        "labels": ["Fire Update"]
     },
     {
         "id": 3,
@@ -31,7 +33,8 @@ MOCK_NOTIFICATIONS = [
         "message": "Expected shift in 30 minutes. May affect fire spread.",
         "timestamp": now_ms - int(24*60*60*1000*0.5),
         "source": "Weather Monitoring System",
-        "acknowledged": True
+        "acknowledged": True,
+        "labels": ["Weather Alert"]
     },
     {
         "id": 4,
@@ -40,7 +43,18 @@ MOCK_NOTIFICATIONS = [
         "message": "Reached target and began water operations.",
         "timestamp": now_ms - int(24*60*60*1000*0.3),
         "source": "Drone Management System",
-        "acknowledged": True
+        "acknowledged": True,
+        "labels": ["Drone Status", "Plan Execution"]
+    },
+    {
+        "id": 5,
+        "severity": "medium",
+        "title": "Wind condition update",
+        "message": "Wind: 12 mph NE",
+        "timestamp": now_ms - int(60*1000*5),
+        "source": "Weather Monitoring System",
+        "acknowledged": True,
+        "labels": ["Wind Condition", "Weather Alert"]
     },
 ]
 

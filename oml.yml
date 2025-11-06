@@ -2,7 +2,7 @@
 project:
    title: Mission Control
    description: This is the mission-control project
-   group: io.github.fireforce6
+   group: io.github.fireforce6-f25
    version: 0.1.0
 
 # Maven repositories
@@ -18,6 +18,6 @@ datasets:
    mission-control: # configured in fuseki.ttl
       label: Mission Control
       description: The set of ontologies in this mission-control project
-      iri: https://fireforce6.github.io/mission-control/bundle
+      iri: https://fireforce6-f25.github.io/mission-control/bundle
       sources: [ 'src/oml' ]
       queries: src/sparql

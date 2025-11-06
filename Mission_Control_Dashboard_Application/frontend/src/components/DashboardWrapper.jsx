@@ -7,6 +7,8 @@ import NotificationsComponent from './NotificationsComponent';
 import FireWardenChatComponent from './FireWardenChatComponent';
 import WebSocketProvider from '../providers/WebSocketProvider';
 import { fetchRecentNotifications } from '../api/apiClient';
+import { fetchRecentFireDroneData } from '../api/apiClient';
+import MapView from './MapView';
 
 // Mock data for dashboard
 const mockDashboardData = {
@@ -31,53 +33,89 @@ const mockDashboardData = {
 };
 
 // Dashboard Component
-const DashboardComponent = () => {
+const DashboardComponent = ({ onViewFullMap }) => {
+  // read websocket-backed history cache (same key LiveMap uses) so this is live with WS
+  const { data: history = { fires: [], drones: [] } } = useQuery({
+    queryKey: ['recent-history'],
+    queryFn: fetchRecentFireDroneData,
+    enabled: false, // WebSocketProvider manages updates into this cache
+  });
+
+  // read notifications from cache so recent activity is live with WS
+  const { data: notifData = { notifications: [] } } = useQuery({
+    queryKey: ['recent-notifications'],
+    queryFn: fetchRecentNotifications,
+    enabled: false,
+  });
+
+  // helper - pick most recent record per id with timestamp <= targetTime
+  const pickMostRecentBefore = (dataArray, targetTime) => {
+    const grouped = dataArray.reduce((acc, item) => {
+      if (!acc[item.id]) acc[item.id] = [];
+      acc[item.id].push(item);
+      return acc;
+    }, {});
+    const result = [];
+    Object.values(grouped).forEach(list => {
+      const candidate = list
+        .filter(it => it.timestamp <= targetTime)
+        .sort((a, b) => a.timestamp - b.timestamp)
+        .pop();
+      if (candidate) result.push(candidate);
+    });
+    return result;
+  };
+
+  const now = Date.now();
+  const previewFires = pickMostRecentBefore(history.fires || [], now);
+  const previewDrones = pickMostRecentBefore(history.drones || [], now);
+
+  // Recent activity: take 6 most recent notifications (descending by timestamp)
+  const recentNotificationsSorted = (notifData.notifications || []).slice().sort((a, b) => b.timestamp - a.timestamp);
+  const recentActivity = recentNotificationsSorted.slice(0, 6).map(n => ({
+    id: n.id,
+    time: n.timestamp,
+    message: n.message || n.title || ''
+  }));
+
+  const formatTimeAgo = (timestamp) => {
+    const diff = Date.now() - timestamp;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    if (minutes > 0) return `${minutes} min ago`;
+    return 'Just now';
+  };
+
+  // Weather condition: find most recent notification tagged 'Wind Condition'
+  const windNotif = recentNotificationsSorted.find(n => (n.labels || []).includes('Wind Condition'));
+  const weatherDescription = windNotif ? (windNotif.message || windNotif.title || '') : null;
   return (
     <div className="w-full h-full p-6 overflow-y-auto" style={{ backgroundColor: '#0a0e1a' }}>
       <h2 className="text-3xl font-bold text-white mb-6">Situation Overview</h2>
       
-      {/* Quick Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {/* Active Fires Card */}
+        {/* Quick Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        {/* Active Fires Card (live) */}
         <div className="rounded-lg p-6" style={{ backgroundColor: '#1f2937' }}>
           <p className="text-gray-400 text-sm mb-2">Active Fires</p>
           <div className="flex items-end gap-2 mb-3">
-            <p className="text-5xl font-bold text-orange-500">{mockDashboardData.activeFires}</p>
+            <p className="text-5xl font-bold text-orange-500">{previewFires.length}</p>
           </div>
-          <div className="w-full rounded-full h-3 mb-2" style={{ backgroundColor: '#374151' }}>
-            <div 
-              className="h-3 rounded-full bg-orange-500" 
-              style={{ width: `${mockDashboardData.containmentPercent}%` }}
-            ></div>
-          </div>
-          <p className="text-xs text-gray-400">{mockDashboardData.containmentPercent}% contained</p>
         </div>
         
-        {/* Drones Active Card */}
+        {/* Drones Active Card (live) */}
         <div className="rounded-lg p-6" style={{ backgroundColor: '#1f2937' }}>
           <p className="text-gray-400 text-sm mb-2">Drones Active</p>
           <div className="flex items-end gap-2 mb-3">
-            <p className="text-5xl font-bold text-cyan-400">{mockDashboardData.dronesActive}</p>
-            <p className="text-2xl text-gray-500 mb-1">/{mockDashboardData.dronesTotal}</p>
+            <p className="text-5xl font-bold text-cyan-400">{previewDrones.length}</p>
           </div>
-          <p className="text-sm text-green-400">✓ {mockDashboardData.dronesCharging} charging</p>
         </div>
         
-        {/* Area Coverage Card */}
-        <div className="rounded-lg p-6" style={{ backgroundColor: '#1f2937' }}>
-          <p className="text-gray-400 text-sm mb-2">Area Coverage</p>
-          <div className="flex items-end gap-2 mb-3">
-            <p className="text-5xl font-bold text-yellow-400">{mockDashboardData.areaCoverage}</p>
-            <p className="text-xl text-gray-500 mb-2">acres</p>
-          </div>
-          <p className="text-xs text-gray-400">Under surveillance</p>
-        </div>
-        
-        {/* Weather Conditions Card */}
+        {/* Weather Conditions (from Wind Condition notification) */}
         <div className="rounded-lg p-6" style={{ backgroundColor: '#1f2937' }}>
           <p className="text-gray-400 text-sm mb-2">Weather Conditions</p>
-          <p className="text-3xl font-bold text-white mb-2">Wind: {mockDashboardData.windSpeed} mph</p>
-          <p className="text-sm text-orange-500">⚠ High risk direction ({mockDashboardData.windDirection})</p>
+          <p className="text-lg font-semibold text-white mb-2">{weatherDescription || 'No recent wind updates'}</p>
         </div>
       </div>
       
@@ -86,17 +124,13 @@ const DashboardComponent = () => {
         <div className="rounded-lg p-6" style={{ backgroundColor: '#1f2937' }}>
           <h3 className="text-2xl font-bold text-white mb-4">Recent Activity</h3>
           <div className="space-y-4">
-            {mockDashboardData.recentActivity.map(activity => (
+            {recentActivity.map(activity => (
               <div key={activity.id} className="border-b border-gray-700 pb-4 last:border-b-0">
                 <div className="flex items-start gap-3">
-                  <div className={`w-2 h-2 rounded-full mt-2 ${
-                    activity.type === 'success' ? 'bg-green-400' :
-                    activity.type === 'warning' ? 'bg-yellow-400' :
-                    'bg-gray-400'
-                  }`}></div>
+                  <div className={`w-2 h-2 rounded-full mt-2 ${'bg-green-400'}`}></div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs text-green-400">{activity.time}</span>
+                      <span className="text-xs text-green-400">{formatTimeAgo(activity.time)}</span>
                     </div>
                     <p className="text-sm text-white">{activity.message}</p>
                   </div>
@@ -109,16 +143,20 @@ const DashboardComponent = () => {
         {/* Live Map Preview */}
         <div className="rounded-lg p-6" style={{ backgroundColor: '#1f2937' }}>
           <h3 className="text-2xl font-bold text-white mb-4">Live Map Preview</h3>
-          <div className="rounded-lg overflow-hidden" style={{ backgroundColor: '#0d1119', height: '400px' }}>
-            <div className="w-full h-full flex items-center justify-center text-gray-500">
-              {/* Simplified map preview - you can embed a mini version of LiveMapComponent here */}
-              <div className="text-center">
-                <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-                <p className="text-sm mb-2">Map Preview</p>
-                <button className="text-cyan-400 text-sm hover:underline">→ View Full Map</button>
-              </div>
+          <div className="rounded-lg relative" style={{ backgroundColor: '#0d1119', height: '400px' }}>
+            {/* Use MapView for preview; show everything by default */}
+            <MapView
+              fires={previewFires}
+              drones={previewDrones}
+              showFires={true}
+              showDrones={true}
+              showResources={true}
+              center={[34.0699, -118.4439]}
+              zoom={13}
+              style={{ height: '100%', width: '100%' }}
+            />
+            <div className="p-3 text-right" style={{ backgroundColor: 'transparent' }}>
+              <button onClick={onViewFullMap} className="text-cyan-400 text-sm hover:underline">→ View Full Map</button>
             </div>
           </div>
         </div>
@@ -150,7 +188,7 @@ const FireMissionControlDashboard = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardComponent />;
+        return <DashboardComponent onViewFullMap={() => setActiveTab('map')} />;
       case 'map':
         return <LiveMapComponent />;
       case 'warden':
