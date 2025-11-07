@@ -1,94 +1,281 @@
 @dc:title "Mission Control description"
 @dc:description "An example of a description."
 description <https://fireforce6.github.io/mission-control/description1#> as description1 {
-
-	uses <http://purl.org/dc/elements/1.1/> as dc
-    uses <https://fireforce6.github.io/sierra/requirement#> as requirement
-        uses <https://fireforce6.github.io/sierra/capability#> as capability
+    uses <http://purl.org/dc/elements/1.1/> as dc
     uses <https://fireforce6.github.io/sierra/base#> as base
-  
-    instance Operator : requirement:Stakeholder [
-        base:description "User of Mission Control Dashboard, Not Fighting Fires Live"
+    uses <https://fireforce6.github.io/sierra/requirement#> as requirement
+    uses <https://fireforce6.github.io/sierra/capability#> as capability
+    uses <https://fireforce6.github.io/sierra/entity#> as ent
+    uses <https://fireforce6.github.io/sierra/process#> as process
+
+
+    instance FireFighter : requirement:Stakeholder, ent:Actor [
+        base:description "Frontline operator fighting fires live, relies on dashboard for tactical awareness."
     ]
 
-    instance FireFighter : requirement:Stakeholder [
-        base:description "User of Mission Control Dashboard, Fighting Fires Live"
+    instance Operator : requirement:Stakeholder, ent:Actor [
+        base:description "Tele-operator or control-room staff monitoring and directing fire containment operations."
     ]
 
+    instance CommandCenter : requirement:Stakeholder, ent:Actor [
+        base:description "Organizational authority responsible for overall coordination and decision-making."
+    ]
+
+    instance SystemEngineer : requirement:Stakeholder, ent:Actor [
+        base:description "Responsible for ensuring system reliability and integration with Fire Cloud and AI Warden."
+    ]
+
+    instance SafetyOfficer : requirement:Stakeholder, ent:Actor [
+        base:description "Ensures alerts, communications, and responses comply with safety protocols."
+    ]
+
+    
     instance R1 : requirement:Requirement [
         base:description "Real-Time Map"
-        base:expression "The system must display real-time fire and drone locations"
+        base:expression "The system must display real-time fire and drone locations."
         requirement:isExpressedBy Operator
     ]
 
     instance R2 : requirement:Requirement [
         base:description "Critical Alerts"
-        base:expression "The system must show real-time critical alerts and notifications"
-        requirement:isExpressedBy Operator
+        base:expression "The system must show real-time critical alerts and notifications."
+        requirement:isExpressedBy SafetyOfficer
     ]
-
 
     instance R3 : requirement:Requirement [
         base:description "AI Warden Interface"
-        base:expression "The system must enable direct, smooth communication with AI Warden"
+        base:expression "The system must enable direct, smooth communication with the AI Fire Warden."
         requirement:isExpressedBy Operator
     ]
 
     instance R4 : requirement:Requirement [
         base:description "Adaptive User Experience"
-        base:expression "The system must provide resilient user interface for adverse field conditions"
+        base:expression "The system must remain functional under field conditions (heat, low connectivity)."
         requirement:isExpressedBy FireFighter
-
     ]
 
     instance R5 : requirement:Requirement [
         base:description "Historical Views"
-        base:expression "Support views of historical time series data"
+        base:expression "The system must support views of historical fire data for temporal analysis."
         requirement:isExpressedBy Operator
     ]
 
+    instance R6 : requirement:Requirement [
+        base:description "Interoperability with Fire Cloud"
+        base:expression "The system must ingest and interpret data streams from Fire Cloud."
+        requirement:isExpressedBy SystemEngineer
+    ]
+
+    instance R7 : requirement:Requirement [
+        base:description "Decision Approval Mechanism"
+        base:expression "The system must allow human approval for AI Fire Warden's high-priority actions."
+        requirement:isExpressedBy CommandCenter
+    ]
+
+
     instance M1 : capability:Mission [
-        base:description "Allow Analysis of Fire at Any Point in Time"
+        base:description "Allow Analysis of Fire at Any Point in Time."
         capability:isDerivedFrom R1
         capability:isDerivedFrom R5
     ]
 
-    instance C1 : capability:Capability [
-        base:description "Enable view of fire state from specific time points"
-        capability:isRequiredBy M1
-    ]
-
     instance M2 : capability:Mission [
-        base:description "Enable Real-Time Data Stream"
+        base:description "Enable Real-Time Data Stream and Awareness."
         capability:isDerivedFrom R1
         capability:isDerivedFrom R2
-        capability:isRequiredBy M1
-    ]
-
-    instance C2 : capability:Capability [
-        base:description "Constantly fetch live fire and drone updates"
-        capability:isRequiredBy M2
-    ]
-    
-    instance C3 : capability:Capability [
-        base:description "Constantly fetch new notifications"
-        capability:isRequiredBy M2
+        capability:isDerivedFrom R6
+        capability:requires M1
     ]
 
     instance M3 : capability:Mission [
-        base:description "Provide Responsive, Easy-to-Use Interface"
+        base:description "Provide Responsive, Easy-to-Use Interface."
         capability:isDerivedFrom R3
         capability:isDerivedFrom R4
     ]
 
+    instance M4 : capability:Mission [
+        base:description "Ensure Safe and Controlled Decision Support."
+        capability:isDerivedFrom R2
+        capability:isDerivedFrom R7
+    ]
+
+
+
+    instance C1 : capability:Capability [
+        base:description "Enable view of fire state from specific time points."
+        capability:isRequiredBy M1
+    ]
+
+    instance C2 : capability:Capability [
+        base:description "Constantly fetch live fire and drone updates."
+        capability:isRequiredBy M2
+    ]
+
+    instance C3 : capability:Capability [
+        base:description "Fetch and visualize new notifications."
+        capability:isRequiredBy M2
+    ]
+
     instance C4 : capability:Capability [
-        base:description "Allow adjustment of dashboard color schemes"
+        base:description "Allow adjustment of dashboard color schemes and layouts."
         capability:isRequiredBy M3
     ]
 
     instance C5 : capability:Capability [
-        base:description "Enable text-message like chat interface with warden"
+        base:description "Enable chat-like interface for AI Warden communication."
         capability:isRequiredBy M3
+        capability:isDerivedFrom R3
     ]
-    
+
+    instance C6 : capability:Capability [
+        base:description "Permit human approval of AI-generated tasks."
+        capability:isRequiredBy M4
+        capability:isDerivedFrom R7
+    ]
+
+    instance C7 : capability:Capability [
+        base:description "Display critical alerts by severity with acknowledgment function."
+        capability:isRequiredBy M4
+        capability:isDerivedFrom R2
+    ]
+
+    instance C8 : capability:Capability [
+        base:description "Integrate Fire Cloud telemetry for environment and drone data."
+        capability:isRequiredBy M2
+        capability:isDerivedFrom R6
+    ]
+
+
+
+    instance DashboardSystem : ent:Entity [
+        base:description "The Mission Control Dashboard software system."
+    ]
+
+    instance FireCloud : ent:Entity [
+        base:description "External service providing fire, drone, and satellite telemetry."
+    ]
+
+    instance AIFireWarden : ent:Entity [
+        base:description "Autonomous AI agent capable of monitoring and suggesting fire management actions."
+    ]
+
+    instance NetworkInterface : ent:Entity [
+        base:description "Handles data synchronization between dashboard and cloud services."
+    ]
+
+
+    ref instance C1 [ ent:involves DashboardSystem ]
+    ref instance C2 [ 
+        ent:involves DashboardSystem
+        ent:involves FireCloud
+        ent:involves NetworkInterface 
+    ]
+    ref instance C3 [ 
+        ent:involves DashboardSystem
+        ent:involves FireCloud
+    ]
+    ref instance C4 [ ent:involves DashboardSystem ]
+    ref instance C5 [ 
+        ent:involves DashboardSystem
+        ent:involves AIFireWarden
+    ]
+    ref instance C6 [ 
+        ent:involves DashboardSystem
+        ent:involves Operator
+        ent:involves AIFireWarden
+    ]
+    ref instance C7 [ 
+        ent:involves DashboardSystem
+        ent:involves SafetyOfficer 
+    ]
+    ref instance C8 [ 
+        ent:involves DashboardSystem
+        ent:involves FireCloud
+        ent:involves SystemEngineer 
+    ]
+
+
+
+    instance P1 : process:Process [
+        base:description "Process for Real-Time Fire Data Streaming."
+        process:describes C2
+    ]
+
+    instance A1 : process:Activity [
+        base:description "Request live telemetry from Fire Cloud."
+        process:isAllocatedTo NetworkInterface
+    ]
+
+    instance A2 : process:Activity [
+        base:description "Receive and parse incoming data stream."
+        process:isAllocatedTo DashboardSystem
+    ]
+
+    instance A3 : process:Activity [
+        base:description "Update map visualization layer with new fire and drone data."
+        process:isAllocatedTo DashboardSystem
+    ]
+
+    instance D1 : base:Data [
+        base:description "Raw telemetry JSON packets."
+    ]
+
+    instance D2 : base:Data [
+        base:description "Parsed positional and status data for fire and drones."
+    ]
+
+    relation instance F1 : process:DataFlow [
+        from A1
+        to A2
+        process:carries D1
+    ]
+
+    relation instance F2 : process:DataFlow [
+        from A2
+        to A3
+        process:carries D2
+    ]
+
+    ref instance P1 [ process:includes F1 ]
+    ref instance P1 [ process:includes F2 ]
+
+
+    instance P2 : process:Process [
+        base:description "Process for Operator-Warden Communication and Task Approval."
+        process:describes C5
+    ]
+
+    instance A4 : process:Activity [
+        base:description "Send operator message to AI Warden."
+        process:isAllocatedTo DashboardSystem
+    ]
+
+    instance A5 : process:Activity [
+        base:description "Receive AI Warden response or task proposal."
+        process:isAllocatedTo AIFireWarden
+    ]
+
+    instance A6 : process:Activity [
+        base:description "Display AI message in chat interface and await user approval."
+        process:isAllocatedTo Operator
+    ]
+
+    instance D3 : base:Data [
+        base:description "Message text or structured task command."
+    ]
+
+    relation instance F3 : process:DataFlow [
+        from A4
+        to A5
+        process:carries D3
+    ]
+
+    relation instance F4 : process:DataFlow [
+        from A5
+        to A6
+        process:carries D3
+    ]
+
+    ref instance P2 [ process:includes F3 ]
+    ref instance P2 [ process:includes F4 ]
  }
