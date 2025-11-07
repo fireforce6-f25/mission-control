@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Mission Control Dashboard</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <style>
+      body { margin: 2rem; }
+      h1 { margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+    <h1>Requirements Table</h1>
+    <div class="table-responsive">
+      <table border="1" class="dataframe table table-striped table-bordered">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Name</th>
+      <th>Description</th>
+      <th>Expression</th>
+      <th>Stakeholder</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>R3</td>
+      <td>AI Warden Interface</td>
+      <td>The system must enable direct, smooth communication with the AI Fire Warden.</td>
+      <td>Operator</td>
+    </tr>
+    <tr>
+      <td>R7</td>
+      <td>Decision Approval Mechanism</td>
+      <td>The system must allow human approval for AI Fire Warden's high-priority actions.</td>
+      <td>CommandCenter</td>
+    </tr>
+    <tr>
+      <td>R2</td>
+      <td>Critical Alerts</td>
+      <td>The system must show real-time critical alerts and notifications.</td>
+      <td>SafetyOfficer</td>
+    </tr>
+    <tr>
+      <td>R6</td>
+      <td>Interoperability with Fire Cloud</td>
+      <td>The system must ingest and interpret data streams from Fire Cloud.</td>
+      <td>SystemEngineer</td>
+    </tr>
+    <tr>
+      <td>R1</td>
+      <td>Real-Time Map</td>
+      <td>The system must display real-time fire and drone locations.</td>
+      <td>Operator</td>
+    </tr>
+    <tr>
+      <td>R5</td>
+      <td>Historical Views</td>
+      <td>The system must support views of historical fire data for temporal analysis.</td>
+      <td>Operator</td>
+    </tr>
+    <tr>
+      <td>R4</td>
+      <td>Adaptive User Experience</td>
+      <td>The system must remain functional under field conditions (heat, low connectivity).</td>
+      <td>FireFighter</td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+    <h1 style="margin-top:3rem;">Mission Graph</h1>
+    <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.1.1.min.js" integrity="sha256-HUEFyfiTnZJxCxur99FjbKYTvKSzwDaD3/x5TqHpFu4=" crossorigin="anonymous"></script>                <div id="57704d0f-7440-4960-adb0-db90bfd34fc2" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("57704d0f-7440-4960-adb0-db90bfd34fc2")) {                    Plotly.newPlot(                        "57704d0f-7440-4960-adb0-db90bfd34fc2",                        [{"hoverinfo":"none","line":{"color":"#888","width":1},"mode":"lines","x":[-0.8670950855872963,-0.9436170258183783,null,-0.8670950855872963,-0.8563740630006935,null,-0.8563740630006935,-0.9436170258183783,null,-0.8563740630006935,-0.6822841966677538,null,-0.8563740630006935,-1.0,null,0.2927336316450466,0.23559227345429087,null,0.2927336316450466,0.2053635732429783,null,0.2053635732429783,0.23559227345429087,null,0.23559227345429087,0.23641041290206447,null,0.23559227345429087,0.21707351038121597,null,0.21707351038121597,0.23641041290206447,null,0.23641041290206447,0.26921418982438994,null,0.26921418982438994,0.13720051431170432,null,0.26921418982438994,0.405472775288568,null,0.26921418982438994,0.1961215125162072,null,0.26921418982438994,0.4920682656965059,null,0.26921418982438994,0.3199412488847219,null,0.26921418982438994,0.12253944377751913,null,0.4920682656965059,0.405472775288568,null,0.4920682656965059,0.5686994846931884,null,0.4920682656965059,0.6509395344557195,null,0.13720051431170432,0.1961215125162072,null],"y":[0.24969041961961175,0.21030561596191333,null,0.24969041961961175,0.11547956098223267,null,0.11547956098223267,0.21030561596191333,null,0.11547956098223267,0.05939222480001541,null,0.11547956098223267,0.04443803405331211,null,0.4755181671935006,0.3215547373608185,null,0.4755181671935006,0.48230978289119536,null,0.48230978289119536,0.3215547373608185,null,0.3215547373608185,0.08110778871625307,null,0.3215547373608185,0.21673768577822608,null,0.21673768577822608,0.08110778871625307,null,0.08110778871625307,-0.2017695039698897,null,-0.2017695039698897,-0.30884245405103344,null,-0.2017695039698897,-0.2568830401227608,null,-0.2017695039698897,-0.3635757662946947,null,-0.2017695039698897,-0.20934486768929536,null,-0.2017695039698897,-0.37639121104627077,null,-0.2017695039698897,-0.1699890397030473,null,-0.20934486768929536,-0.2568830401227608,null,-0.20934486768929536,-0.0885456611608187,null,-0.20934486768929536,-0.2811924733192686,null,-0.30884245405103344,-0.3635757662946947,null],"type":"scatter"},{"hoverinfo":"text","hovertext":["R3\u003cbr\u003eAI Warden Interface","M3\u003cbr\u003eProvide Responsive, Easy-to-Use Interface.","C4\u003cbr\u003eAllow adjustment of dashboard color schemes and layouts.","C5\u003cbr\u003eEnable chat-like interface for AI Warden communication.","R7\u003cbr\u003eDecision Approval Mechanism","C6\u003cbr\u003ePermit human approval of AI-generated tasks.","M4\u003cbr\u003eEnsure Safe and Controlled Decision Support.","C7\u003cbr\u003eDisplay critical alerts by severity with acknowledgment function.","R2\u003cbr\u003eCritical Alerts","M2\u003cbr\u003eEnable Real-Time Data Stream and Awareness.","M1\u003cbr\u003eAllow Analysis of Fire at Any Point in Time.","C2\u003cbr\u003eConstantly fetch live fire and drone updates.","C3\u003cbr\u003eFetch and visualize new notifications.","C8\u003cbr\u003eIntegrate Fire Cloud telemetry for environment and drone data.","R6\u003cbr\u003eInteroperability with Fire Cloud","R1\u003cbr\u003eReal-Time Map","C1\u003cbr\u003eEnable view of fire state from specific time points.","R5\u003cbr\u003eHistorical Views","R4\u003cbr\u003eAdaptive User Experience"],"marker":{"color":"LightSkyBlue","line":{"color":"DarkSlateGrey","width":1},"size":18},"mode":"markers+text","text":["R3","M3","C4","C5","R7","C6","M4","C7","R2","M2","M1","C2","C3","C8","R6","R1","C1","R5","R4"],"textposition":"top center","x":[-0.8670950855872963,-0.8563740630006935,-1.0,-0.9436170258183783,0.2927336316450466,0.2053635732429783,0.23559227345429087,0.21707351038121597,0.23641041290206447,0.26921418982438994,0.4920682656965059,0.12253944377751913,0.3199412488847219,0.13720051431170432,0.1961215125162072,0.405472775288568,0.5686994846931884,0.6509395344557195,-0.6822841966677538],"y":[0.24969041961961175,0.11547956098223267,0.04443803405331211,0.21030561596191333,0.4755181671935006,0.48230978289119536,0.3215547373608185,0.21673768577822608,0.08110778871625307,-0.2017695039698897,-0.20934486768929536,-0.1699890397030473,-0.37639121104627077,-0.30884245405103344,-0.3635757662946947,-0.2568830401227608,-0.0885456611608187,-0.2811924733192686,0.05939222480001541],"type":"scatter"}],                        {"hovermode":"closest","margin":{"b":20,"l":5,"r":5,"t":40},"showlegend":false,"title":{"text":"Requirement\u2013Capability\u2013SubCapability Graph"},"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}}},                        {"responsive": true}                    )                };            </script>        </div>
+
+    <script>
+    $(document).ready(function() {
+        $('table').DataTable({
+            paging: true,
+            searching: true,
+            ordering: true,
+            pageLength: 10
+        });
+    });
+    </script>
+</body>
+</html>

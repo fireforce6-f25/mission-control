@@ -3,10 +3,11 @@ PREFIX requirement: <https://fireforce6.github.io/sierra/requirement#>
 PREFIX base: <https://fireforce6.github.io/sierra/base#>
 
 
-SELECT DISTINCT ?requirementURI ?description ?expression
+SELECT DISTINCT ?requirementURI ?description ?expression ?stakeholderURI
 
 WHERE {
 	?requirementURI a requirement:Requirement ;
-		base:expression ?expression ;
-		base:description ?description .
-	}
+	base:expression ?expression ;
+	base:description ?description ;
+	requirement:isExpressedBy ?stakeholderURI .
+}

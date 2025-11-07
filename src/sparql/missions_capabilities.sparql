@@ -4,11 +4,17 @@ PREFIX capability: <https://fireforce6.github.io/sierra/capability#>
 
 PREFIX base: <https://fireforce6.github.io/sierra/base#>
 
-SELECT DISTINCT ?capabilityURI ?capabilityDescription ?subCapabilityURI ?subCapabilityDescription
+SELECT DISTINCT ?requirementURI ?requirementDescription ?requirementExpression ?capabilityURI ?capabilityDescription ?subCapabilityURI ?subCapabilityDescription
 
 WHERE {
+	?requirementURI a requirement:Requirement ;
+	base:expression ?requirementExpression ;
+	base:description ?requirementDescription .
+
 	?capabilityURI a capability:Capability ;
-	base:description ?capabilityDescription .
+	base:description ?capabilityDescription ;
+	capability:isDerivedFrom ?requirementURI;
+
 	OPTIONAL {
 		?capabilityURI capability:requires ?subCapabilityURI .
 		?subCapabilityURI base:description ?subCapabilityDescription
