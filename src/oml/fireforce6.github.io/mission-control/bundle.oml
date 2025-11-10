@@ -7,5 +7,5 @@ description bundle <https://fireforce6.github.io/mission-control/bundle#> as d-b
 
      // All descriptions included in this bundle
      includes <https://fireforce6.github.io/mission-control/description1#>
-
+     includes <https://fireforce6.github.io/mission-control/description2#>
 }
