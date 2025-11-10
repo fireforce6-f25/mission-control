@@ -1,6 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 import time
+import logging
+import sys
+
+logger = logging.getLogger(__name__)
 
 # --- Mock Fire/Drone Data ---
 now_ms = int(time.time() * 1000)
@@ -48,4 +52,80 @@ def recent_fire_drone_data(request):
     start_ts = now_ms - 24*60*60*1000
     fires = [f for f in MOCK_FIRE_DATA if start_ts <= f['timestamp'] <= now_ms]
     drones = [d for d in MOCK_DRONE_DATA if start_ts <= d['timestamp'] <= now_ms]
+
+    # Return newest-first for UI convenience
+    try:
+        fires.sort(key=lambda f: f.get('timestamp', 0), reverse=True)
+    except Exception:
+        pass
+    try:
+        drones.sort(key=lambda d: d.get('timestamp', 0), reverse=True)
+    except Exception:
+        pass
+
     return Response({"fires": fires, "drones": drones})
+
+
+@api_view(['GET'])
+def query_fire_drone_data(request):
+    """Query fire/drone records between start and end timestamps (ms).
+
+    Optional query params:
+    - start: integer ms since epoch
+    - end: integer ms since epoch
+    - entity: 'fires' or 'drones' (optional)
+    """
+    now_ms = int(time.time() * 1000)
+    try:
+        start = int(request.GET.get('start', now_ms - 24*60*60*1000))
+    except (TypeError, ValueError):
+        start = now_ms - 24*60*60*1000
+    try:
+        end = int(request.GET.get('end', now_ms))
+    except (TypeError, ValueError):
+        end = now_ms
+
+    entity = request.GET.get('entity')
+
+    fires = [f for f in MOCK_FIRE_DATA if start <= f['timestamp'] <= end]
+    drones = [d for d in MOCK_DRONE_DATA if start <= d['timestamp'] <= end]
+
+    # Sort newest-first so pagination and UI always see latest entries first
+    try:
+        fires.sort(key=lambda f: f.get('timestamp', 0), reverse=True)
+    except Exception:
+        pass
+    try:
+        drones.sort(key=lambda d: d.get('timestamp', 0), reverse=True)
+    except Exception:
+        pass
+
+    # server-side paging
+    try:
+        page = int(request.GET.get('page', 0))
+    except (TypeError, ValueError):
+        page = 0
+    try:
+        page_size = int(request.GET.get('page_size', 50))
+    except (TypeError, ValueError):
+        page_size = 50
+
+
+    def page_list(lst):
+        total = len(lst)
+        start_idx = page * page_size
+        end_idx = start_idx + page_size
+        return lst[start_idx:end_idx], total
+
+    # If entity specified, page that list and return counts
+    if entity == 'fires':
+        paged_fires, total_fires = page_list(fires)
+        return Response({"fires": paged_fires, "drones": [], "totals": {"fires": total_fires, "drones": len(drones)}})
+    if entity == 'drones':
+        paged_drones, total_drones = page_list(drones)
+        return Response({"fires": [], "drones": paged_drones, "totals": {"fires": len(fires), "drones": total_drones}})
+
+    # otherwise return both paged independently
+    paged_fires, total_fires = page_list(fires)
+    paged_drones, total_drones = page_list(drones)
+    return Response({"fires": paged_fires, "drones": paged_drones, "totals": {"fires": total_fires, "drones": total_drones}})

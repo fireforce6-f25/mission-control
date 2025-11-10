@@ -65,7 +65,7 @@ class NotificationsConsumer(AsyncWebsocketConsumer):
     async def _send_periodic(self):
         try:
             while True:
-                await asyncio.sleep(15)
+                await asyncio.sleep(60)
                 notif = generate_notification()
                 await self.send(text_data=json.dumps(notif))
                 print(f"[Notifications WS] sent: {notif['title']}")

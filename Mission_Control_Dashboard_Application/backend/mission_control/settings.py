@@ -139,3 +139,17 @@ CHANNEL_LAYERS = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
+
+LOGGING = {
+  "version": 1,
+  "disable_existing_loggers": False,
+  "handlers": {"console": {"class": "logging.StreamHandler"}},
+  "root": {"handlers": ["console"], "level": "INFO"},
+  "loggers": {
+    # enable debug for this module if you want detailed timestamps
+        # module logger name is 'api.views.fire_drone' (not 'backend.api...')
+        "api.views.fire_drone": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
+        # also enable debug for the whole `api` package while developing
+        "api": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
+  },
+}

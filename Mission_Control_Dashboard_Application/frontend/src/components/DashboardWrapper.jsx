@@ -9,6 +9,7 @@ import WebSocketProvider from '../providers/WebSocketProvider';
 import { fetchRecentNotifications } from '../api/apiClient';
 import { fetchRecentFireDroneData } from '../api/apiClient';
 import MapView from './MapView';
+import FireDroneGrid from './FireDroneGrid';
 
 // Mock data for dashboard
 const mockDashboardData = {
@@ -181,6 +182,7 @@ const FireMissionControlDashboard = () => {
   const tabs = [
     { id: 'dashboard', label: '📊 Dashboard', icon: '📊' },
     { id: 'map', label: '🗺️ Live Map', icon: '🗺️' },
+    { id: 'grid', label: '📋 Grid View', icon: '📋' },
     { id: 'warden', label: '🤖 Fire Warden', icon: '🤖' },
     { id: 'notifications', label: '🔔 Notifications', icon: '🔔', badge: unreadNotifications },
   ];
@@ -191,6 +193,8 @@ const FireMissionControlDashboard = () => {
         return <DashboardComponent onViewFullMap={() => setActiveTab('map')} />;
       case 'map':
         return <LiveMapComponent />;
+      case 'grid':
+        return <FireDroneGrid />;
       case 'warden':
         return <FireWardenChatComponent />;
       case 'notifications':

@@ -3,7 +3,10 @@
 @tailwind utilities;
 
 /* any global rules below */
-html,body,#root { height:100%; }
+html,body,#root { 
+  height:100%; 
+  background-color: rgb(10, 14, 26);
+}
 
 /* Custom toast notification styles */
 .toast-critical {
