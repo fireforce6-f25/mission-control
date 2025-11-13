@@ -1,0 +1,25 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX requirement: <https://fireforce6.github.io/sierra/requirement#>
+PREFIX capability: <https://fireforce6.github.io/sierra/capability#>
+PREFIX entity: <https://fireforce6.github.io/sierra/entity#>
+PREFIX process: <https://fireforce6.github.io/sierra/process#>
+PREFIX base: <https://fireforce6.github.io/sierra/base#>
+PREFIX state: <https://fireforce6.github.io/sierra/state#>
+PREFIX oml:       <http://opencaesar.io/oml#>
+
+
+SELECT DISTINCT ?t ?s1 ?s1desc ?s2 ?s2desc ?trigger ?triggerdesc
+
+WHERE {
+  ?t a state:Transition ;
+    oml:hasSource ?s1 ;
+    oml:hasTarget ?s2 .
+
+  ?s1 base:description ?s1desc .
+  ?s2 base:description ?s2desc .
+
+  OPTIONAL {
+    ?t state:isTriggeredBy ?trigger .
+    ?trigger base:description ?triggerdesc .
+  }
+}

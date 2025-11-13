@@ -1,0 +1,21 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX requirement: <https://fireforce6.github.io/sierra/requirement#>
+PREFIX capability: <https://fireforce6.github.io/sierra/capability#>
+PREFIX entity: <https://fireforce6.github.io/sierra/entity#>
+PREFIX process: <https://fireforce6.github.io/sierra/process#>
+PREFIX base: <https://fireforce6.github.io/sierra/base#>
+PREFIX oml:       <http://opencaesar.io/oml#>
+
+
+SELECT DISTINCT ?df ?a1 ?desc1 ?a2 ?desc2 ?d ?datadesc
+
+WHERE {
+  ?df a process:DataFlow ;
+    oml:hasSource ?a1 ;
+    oml:hasTarget ?a2 ;
+    process:carries ?d .
+
+  ?a1 base:description ?desc1 .
+  ?a2 base:description ?desc2 . 
+  ?d base:description ?datadesc .
+}
