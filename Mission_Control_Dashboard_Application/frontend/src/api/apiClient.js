@@ -41,16 +41,11 @@ export async function fetchRecentFireDroneData() {
 /**
  * Query fire/drone data between two timestamps (ms). Optional entity param: 'fires' or 'drones'
  */
-export async function fetchFireDroneRange(startMs, endMs, entity, page = 0, pageSize = 50) {
-  const params = { start: startMs, end: endMs, page, page_size: pageSize };
+export async function fetchFireDroneRange(startMs, endMs, entity) {
+  const params = { start: startMs, end: endMs };
   if (entity) params.entity = entity;
   const resp = await apiClient.get('fire-drone/query/', { params });
-  // resp.data expected to include fires, drones, and totals
-  const normalized = normalizeHistory(resp.data || {});
-  return {
-    ...normalized,
-    totals: (resp.data && resp.data.totals) ? resp.data.totals : { fires: (normalized.fires||[]).length, drones: (normalized.drones||[]).length }
-  };
+  return normalizeHistory(resp.data || {});
 }
 
 /**
@@ -61,6 +56,14 @@ export async function fetchRecentNotifications() {
   return {
     notifications: normalizeNotifications(resp.data.notifications || [])
   };
+}
+
+/**
+ * Send a message to Fire Warden AI chat
+ */
+export async function sendFireWardenMessage(message) {
+  const resp = await apiClient.post("fire-warden/chat/", { message });
+  return resp.data;
 }
 
 // Legacy alias for backward compatibility

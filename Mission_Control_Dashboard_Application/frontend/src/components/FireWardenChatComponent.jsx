@@ -1,61 +1,5 @@
 import React, { useState } from 'react';
-
-// Mock API for Fire Warden responses
-const mockFireWardenAPI = async (message) => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  // Generate mock responses based on keywords
-  const lowerMessage = message.toLowerCase();
-  
-  if (lowerMessage.includes('status') || lowerMessage.includes('situation')) {
-    return {
-      type: 'text',
-      content: 'Current situation analysis: We have 7 active fires across multiple sectors. Fire F-2 in Sector C is the primary concern due to increasing wind speeds. I recommend deploying additional drones to the northeast perimeter.'
-    };
-  }
-  
-  if (lowerMessage.includes('strategy') || lowerMessage.includes('plan')) {
-    return {
-      type: 'plan',
-      content: 'I\'ve analyzed the situation and generated a tactical plan:',
-      plan: {
-        title: 'Sector C Reinforcement Strategy',
-        actions: [
-          'Redeploy Drones D-15, D-18, D-22, D-24 from Sector A to Sector C',
-          'Position drones at coordinates: N42.5°, N43.1°, N43.7°, N44.2°',
-          'Increase water drop frequency to every 90 seconds',
-          'Establish firebreak along northeastern perimeter'
-        ],
-        impact: {
-          containment: '40% faster containment',
-          eta: '2.5 hours',
-          successProbability: '87%'
-        }
-      }
-    };
-  }
-  
-  if (lowerMessage.includes('drone')) {
-    return {
-      type: 'text',
-      content: 'Drone fleet status: 24 of 30 drones are currently active. Average battery level is 78%, average water capacity is 52%. Drones D-06 and D-04 will need to return for refueling within the next 15 minutes.'
-    };
-  }
-  
-  if (lowerMessage.includes('weather') || lowerMessage.includes('wind')) {
-    return {
-      type: 'text',
-      content: 'Current weather conditions: Wind speed is 12 mph from the northeast. Forecast shows winds may increase to 18 mph within the next 2 hours. Temperature is 85°F with 15% humidity. These conditions favor rapid fire spread.'
-    };
-  }
-  
-  // Default response
-  return {
-    type: 'text',
-    content: 'I understand your query. Based on current fire patterns and resource availability, I can provide strategic recommendations. Would you like me to analyze a specific sector or generate a comprehensive tactical plan?'
-  };
-};
+import { sendFireWardenMessage } from '../api/apiClient';
 
 // Fire Warden Chat Component
 const FireWardenChatComponent = () => {
@@ -106,7 +50,7 @@ const FireWardenChatComponent = () => {
     setIsLoading(true);
 
     try {
-      const response = await mockFireWardenAPI(inputValue);
+      const response = await sendFireWardenMessage(inputValue);
       
       const wardenMessage = {
         id: Date.now() + 1,

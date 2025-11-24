@@ -100,32 +100,11 @@ def query_fire_drone_data(request):
     except Exception:
         pass
 
-    # server-side paging
-    try:
-        page = int(request.GET.get('page', 0))
-    except (TypeError, ValueError):
-        page = 0
-    try:
-        page_size = int(request.GET.get('page_size', 50))
-    except (TypeError, ValueError):
-        page_size = 50
-
-
-    def page_list(lst):
-        total = len(lst)
-        start_idx = page * page_size
-        end_idx = start_idx + page_size
-        return lst[start_idx:end_idx], total
-
-    # If entity specified, page that list and return counts
+    # Return all matching records (no pagination)
     if entity == 'fires':
-        paged_fires, total_fires = page_list(fires)
-        return Response({"fires": paged_fires, "drones": [], "totals": {"fires": total_fires, "drones": len(drones)}})
+        return Response({"fires": fires, "drones": []})
     if entity == 'drones':
-        paged_drones, total_drones = page_list(drones)
-        return Response({"fires": [], "drones": paged_drones, "totals": {"fires": len(fires), "drones": total_drones}})
+        return Response({"fires": [], "drones": drones})
 
-    # otherwise return both paged independently
-    paged_fires, total_fires = page_list(fires)
-    paged_drones, total_drones = page_list(drones)
-    return Response({"fires": paged_fires, "drones": paged_drones, "totals": {"fires": total_fires, "drones": total_drones}})
+    # otherwise return both lists
+    return Response({"fires": fires, "drones": drones})

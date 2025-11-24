@@ -11,28 +11,6 @@ import { fetchRecentFireDroneData } from '../api/apiClient';
 import MapView from './MapView';
 import FireDroneGrid from './FireDroneGrid';
 
-// Mock data for dashboard
-const mockDashboardData = {
-  activeFires: 7,
-  containmentPercent: 70,
-  dronesActive: 24,
-  dronesTotal: 30,
-  dronesCharging: 6,
-  areaCoverage: 847,
-  windSpeed: 12,
-  windDirection: 'NE',
-  avgBattery: 78,
-  avgWater: 52,
-  recentActivity: [
-    { id: 1, time: '2 min ago', message: 'Drone-12 deployed to Sector C', type: 'success' },
-    { id: 2, time: '5 min ago', message: 'Fire containment improved in Zone 3', type: 'success' },
-    { id: 3, time: '8 min ago', message: 'Weather alert: Wind speed increasing', type: 'warning' },
-    { id: 4, time: '12 min ago', message: 'New fire detected in Sector A-7', type: 'success' },
-    { id: 5, time: '15 min ago', message: 'Drone-07 battery critical, returning to base', type: 'info' },
-    { id: 6, time: '18 min ago', message: 'Fire Warden recommended strategy update', type: 'success' },
-  ]
-};
-
 // Dashboard Component
 const DashboardComponent = ({ onViewFullMap }) => {
   // read websocket-backed history cache (same key LiveMap uses) so this is live with WS
