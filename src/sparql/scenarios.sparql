@@ -1,0 +1,71 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX scenario: <https://fireforce6.github.io/sierra/scenario#>
+PREFIX base: <https://fireforce6.github.io/sierra/base#>
+PREFIX oml: <http://opencaesar.io/oml#>
+
+SELECT DISTINCT ?scenario ?scenarioDesc 
+                ?lifeline ?lifelineName ?lifelineDesc 
+                ?timepoint ?tp_order
+                ?message ?messageDesc ?messageData
+                ?execution ?executionDesc ?executionActivity
+                ?stateFragment ?stateFragmentDesc ?stateFragmentState
+
+WHERE {
+  # Get scenarios
+  ?scenario a scenario:Scenario ;
+            base:description ?scenarioDesc .
+  
+  # Get lifelines for each scenario
+  OPTIONAL {
+    ?scenario scenario:hasLifeline ?lifeline .
+    ?lifeline base:description ?lifelineDesc .
+    
+    # Extract lifeline name from URI
+    BIND(REPLACE(STR(?lifeline), "^.*/", "") AS ?lifelineName)
+    
+    # Get timepoints that occur on this lifeline
+    OPTIONAL {
+      ?timepoint scenario:occursOn ?lifeline .
+      
+      # Try to determine order of timepoints
+      OPTIONAL {
+        ?timepoint scenario:before ?nextTP .
+      }
+      
+      # Count how many 'before' relationships lead to this timepoint (to get ordering)
+      BIND(IF(BOUND(?nextTP), 1, 0) AS ?tp_order)
+      
+      # Get messages at this timepoint
+      OPTIONAL {
+        ?message scenario:atTime ?timepoint ;
+                 base:description ?messageDesc .
+        OPTIONAL {
+          ?message scenario:carries ?messageData .
+        }
+      }
+      
+      # Get executions that start or end at this timepoint
+      OPTIONAL {
+        {
+          ?execution scenario:startsAt ?timepoint .
+        } UNION {
+          ?execution scenario:endsAt ?timepoint .
+        }
+        ?execution base:description ?executionDesc .
+        OPTIONAL {
+          ?execution scenario:executes ?executionActivity .
+        }
+      }
+      
+      # Get state fragments at this timepoint
+      OPTIONAL {
+        ?stateFragment scenario:atTime ?timepoint ;
+                       base:description ?stateFragmentDesc .
+        OPTIONAL {
+          ?stateFragment scenario:checks ?stateFragmentState .
+        }
+      }
+    }
+  }
+}
+ORDER BY ?scenario ?lifelineName ?timepoint

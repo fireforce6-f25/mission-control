@@ -7,3 +7,7 @@ build
 
 # Fuseki output directory
 .fuseki
+
+# Python Cache
+__pycache__/
+*.pyc

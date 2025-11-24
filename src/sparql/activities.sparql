@@ -7,9 +7,13 @@ PREFIX base: <https://fireforce6.github.io/sierra/base#>
 PREFIX oml:       <http://opencaesar.io/oml#>
 
 
-SELECT DISTINCT ?df ?a1 ?desc1 ?a2 ?desc2 ?d ?datadesc
+SELECT DISTINCT ?p ?pdesc ?df ?a1 ?desc1 ?a2 ?desc2 ?d ?datadesc
 
 WHERE {
+  ?p a process:Process ;
+    base:description ?pdesc ;
+    process:includes ?df .
+    
   ?df a process:DataFlow ;
     oml:hasSource ?a1 ;
     oml:hasTarget ?a2 ;
