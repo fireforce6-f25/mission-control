@@ -1,0 +1,132 @@
+@dc:title "Mission and Capabilities Description"
+@dc:description "Description of missions and capabilities for the Mission Control system."
+description <https://fireforce6.github.io/mission-control/missions_capabilities#> as missions_capabilities {
+    uses <http://purl.org/dc/elements/1.1/> as dc
+    uses <https://fireforce6.github.io/sierra/base#> as base
+    uses <https://fireforce6.github.io/sierra/capability#> as capability
+    uses <https://fireforce6.github.io/sierra/entity#> as ent
+    
+    extends <https://fireforce6.github.io/mission-control/stakeholders_requirements#> as stakeholders_requirements
+
+
+    instance M1 : capability:Mission [
+        base:description "Allow Analysis of Fire at Any Point in Time."
+        capability:isDerivedFrom stakeholders_requirements:R1
+        capability:isDerivedFrom stakeholders_requirements:R5
+    ]
+
+    instance M2 : capability:Mission [
+        base:description "Enable Real-Time Data Stream and Awareness."
+        capability:isDerivedFrom stakeholders_requirements:R1
+        capability:isDerivedFrom stakeholders_requirements:R2
+        capability:isDerivedFrom stakeholders_requirements:R6
+        capability:requires M1
+    ]
+
+    instance M3 : capability:Mission [
+        base:description "Provide Responsive, Easy-to-Use Interface."
+        capability:isDerivedFrom stakeholders_requirements:R3
+        capability:isDerivedFrom stakeholders_requirements:R4
+    ]
+
+    instance M4 : capability:Mission [
+        base:description "Ensure Safe and Controlled Decision Support."
+        capability:isDerivedFrom stakeholders_requirements:R2
+        capability:isDerivedFrom stakeholders_requirements:R7
+    ]
+
+
+
+    instance C1 : capability:Capability [
+        base:description "Enable view of fire state from specific time points."
+        capability:isRequiredBy M1
+    ]
+
+    instance C2 : capability:Capability [
+        base:description "Constantly fetch live fire and drone updates."
+        capability:isRequiredBy M2
+    ]
+
+    instance C3 : capability:Capability [
+        base:description "Fetch and visualize new notifications."
+        capability:isRequiredBy M2
+    ]
+
+    instance C4 : capability:Capability [
+        base:description "Allow adjustment of dashboard color schemes and layouts."
+        capability:isRequiredBy M3
+    ]
+
+    instance C5 : capability:Capability [
+        base:description "Enable chat-like interface for AI Warden communication."
+        capability:isRequiredBy M3
+        capability:isDerivedFrom stakeholders_requirements:R3
+    ]
+
+    instance C6 : capability:Capability [
+        base:description "Permit human approval of AI-generated tasks."
+        capability:isRequiredBy M4
+        capability:isDerivedFrom stakeholders_requirements:R7
+    ]
+
+    instance C7 : capability:Capability [
+        base:description "Display critical alerts by severity with acknowledgment function."
+        capability:isRequiredBy M4
+        capability:isDerivedFrom stakeholders_requirements:R2
+    ]
+
+    instance C8 : capability:Capability [
+        base:description "Integrate Fire Cloud telemetry for environment and drone data."
+        capability:isRequiredBy M2
+        capability:isDerivedFrom stakeholders_requirements:R6
+    ]
+
+
+
+    instance DashboardSystem : ent:Entity [
+        base:description "The Mission Control Dashboard software system."
+    ]
+
+    instance FireCloud : ent:Entity [
+        base:description "External service providing fire, drone, and satellite telemetry."
+    ]
+
+    instance AIFireWarden : ent:Entity [
+        base:description "Autonomous AI agent capable of monitoring and suggesting fire management actions."
+    ]
+
+    instance NetworkInterface : ent:Entity [
+        base:description "Handles data synchronization between dashboard and cloud services."
+    ]
+
+
+    ref instance C1 [ ent:involves DashboardSystem ]
+    ref instance C2 [ 
+        ent:involves DashboardSystem
+        ent:involves FireCloud
+        ent:involves NetworkInterface 
+    ]
+    ref instance C3 [ 
+        ent:involves DashboardSystem
+        ent:involves FireCloud
+    ]
+    ref instance C4 [ ent:involves DashboardSystem ]
+    ref instance C5 [ 
+        ent:involves DashboardSystem
+        ent:involves AIFireWarden
+    ]
+    ref instance C6 [ 
+        ent:involves DashboardSystem
+        ent:involves stakeholders_requirements:Operator
+        ent:involves AIFireWarden
+    ]
+    ref instance C7 [ 
+        ent:involves DashboardSystem
+        ent:involves stakeholders_requirements:SafetyOfficer 
+    ]
+    ref instance C8 [ 
+        ent:involves DashboardSystem
+        ent:involves FireCloud
+        ent:involves stakeholders_requirements:SystemEngineer 
+    ]
+ }

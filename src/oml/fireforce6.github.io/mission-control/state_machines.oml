@@ -1,0 +1,217 @@
+@dc:title "State Machine Description"
+@dc:description "Description of state machines for the Mission Control system."
+description <https://fireforce6.github.io/mission-control/state_machines#> as state_machines
+{
+    uses <http://purl.org/dc/elements/1.1/> as dc
+    uses <https://fireforce6.github.io/sierra/base#> as base
+    uses <https://fireforce6.github.io/sierra/state#> as state
+    extends <https://fireforce6.github.io/mission-control/missions_capabilities#> as missions_capabilities
+    extends <https://fireforce6.github.io/mission-control/processes_activities#> as processes_activities
+
+
+    instance D_alert : base:Data [
+        base:description "Alert signal (critical notification) produced by FireCloud or AIFireWarden."
+    ]
+
+    instance D_ai_proposal : base:Data [
+        base:description "Structured task proposal from AI Fire Warden (may require approval)."
+    ]
+
+    instance D_approval : base:Data [
+        base:description "Operator approval decision (approve / reject) for AI action."
+    ]
+
+    instance D_history_request : base:Data [
+        base:description "Request for historical telemetry/time-series data."
+    ]
+
+    instance D_history_response : base:Data [
+        base:description "Historical telemetry/time-series data returned from Fire Cloud."
+    ]
+
+
+    instance MissionControlDashboardStateMachine : state:StateMachine [
+        base:description "State machine modeling the Mission Control Dashboard operational modes."
+        state:isAllocatedTo missions_capabilities:DashboardSystem
+        base:contains Idle
+        base:contains Monitoring
+        base:contains AlertHandling
+        base:contains DecisionPending
+        base:contains HistoricalReview
+        base:contains DashboardInitial
+        base:contains DashboardFinal
+    ]
+
+    instance DashboardInitial : state:Initial [
+        base:description "Initial dashboard state (startup / not connected)."
+    ]
+
+    instance Idle : state:Mode [
+        base:description "Dashboard is idle or on standby; not actively streaming."
+    ]
+
+    instance Monitoring : state:Mode [
+        base:description "Dashboard is actively monitoring live data and updating the map."
+    ]
+
+    instance AlertHandling : state:Mode [
+        base:description "Dashboard is handling a critical alert; displaying pop-up and workflow."
+    ]
+
+    instance DecisionPending : state:Mode [
+        base:description "Dashboard is awaiting human approval for an AI-suggested task."
+    ]
+
+    instance HistoricalReview : state:Mode [
+        base:description "Dashboard is in historical/time-travel view mode (slider engaged)."
+    ]
+
+    instance DashboardFinal : state:Final [
+        base:description "Dashboard session ended / system shutdown."
+    ]
+
+    relation instance T_startMonitoring : state:Transition [
+        from DashboardInitial
+        to Monitoring
+        base:description "Startup / user starts monitoring."
+        state:isTriggeredBy D_history_response
+    ]
+
+    relation instance T_idle_to_monitoring : state:Transition [
+        from Idle
+        to Monitoring
+        base:description "Operator starts live monitoring."
+        state:isTriggeredBy D_alert
+    ]
+
+    relation instance T_monitoring_receive_alert : state:Transition [
+        from Monitoring
+        to AlertHandling
+        base:description "Incoming critical alert moves dashboard into AlertHandling state."
+        state:isTriggeredBy D_alert
+    ]
+
+    relation instance T_alert_acknowledge : state:Transition [
+        from AlertHandling
+        to Monitoring
+        base:description "Operator acknowledges alert; if no approval required, return to Monitoring."
+        state:isTriggeredBy D_approval
+    ]
+
+    relation instance T_alert_requires_approval : state:Transition [
+        from AlertHandling
+        to DecisionPending
+        base:description "Alert triggers an AI proposal that requires human approval; go to DecisionPending."
+        state:isTriggeredBy D_ai_proposal
+    ]
+
+    relation instance T_decision_approved : state:Transition [
+        from DecisionPending
+        to Monitoring
+        base:description "Operator approves AI action; return to Monitoring (or remain in DecisionPending until executed)."
+        state:isTriggeredBy D_approval
+    ]
+
+    relation instance T_enter_historical : state:Transition [
+        from Monitoring
+        to HistoricalReview
+        base:description "Operator requests historical view."
+        state:isTriggeredBy D_history_request
+    ]
+
+    relation instance T_exit_historical : state:Transition [
+        from HistoricalReview
+        to Monitoring
+        base:description "Operator returns from historical view to live monitoring."
+        state:isTriggeredBy D_history_response
+    ]
+
+    relation instance T_shutdown : state:Transition [
+        from Monitoring
+        to DashboardFinal
+        base:description "Operator or system shuts down dashboard session."
+    ]
+
+    ref instance Idle [ state:enables processes_activities:A1 ]
+    ref instance Monitoring [ state:enables processes_activities:A2 ]
+    ref instance Monitoring [ state:enables processes_activities:A3 ]
+    ref instance AlertHandling [ state:enables processes_activities:A3 ]
+    ref instance AlertHandling [ state:enables processes_activities:A6 ]
+    ref instance DecisionPending [ state:enables processes_activities:A6 ]
+    ref instance HistoricalReview [ state:enables processes_activities:A2 ]
+
+
+    instance AIFireWardenStateMachine : state:StateMachine [
+        base:description "State machine modeling the AI Fire Warden behavior."
+        state:isAllocatedTo missions_capabilities:AIFireWarden
+        base:contains WardenInitial
+        base:contains Observing
+        base:contains Advising
+        base:contains AwaitingApproval
+        base:contains ExecutingAction
+        base:contains WardenFinal
+    ]
+
+    instance WardenInitial : state:Initial [
+        base:description "AI Warden startup / idle."
+    ]
+
+    instance Observing : state:Mode [
+        base:description "Warden monitors telemetry and looks for anomalies."
+    ]
+
+    instance Advising : state:Mode [
+        base:description "Warden formulates a recommendation or task (advisory mode)."
+    ]
+
+    instance AwaitingApproval : state:Mode [
+        base:description "Warden has proposed an action and is awaiting human approval."
+    ]
+
+    instance ExecutingAction : state:Mode [
+        base:description "Warden is executing an approved mitigation task (autonomous actions)."
+    ]
+
+    instance WardenFinal : state:Final [
+        base:description "Warden stops / safe state."
+    ]
+
+    relation instance W_T_idle_to_observing : state:Transition [
+        from WardenInitial
+        to Observing
+        base:description "Warden becomes active and starts observation."
+    ]
+
+    relation instance W_T_detect_anomaly : state:Transition [
+        from Observing
+        to Advising
+        base:description "While observing, Warden detects anomaly (smoke/fire)."
+        state:isTriggeredBy D_alert
+    ]
+
+    relation instance W_T_propose_action : state:Transition [
+        from Advising
+        to AwaitingApproval
+        base:description "Warden generates a structured proposal and sends to dashboard/operator."
+        state:isTriggeredBy D_ai_proposal
+    ]
+
+    relation instance W_T_receive_approval : state:Transition [
+        from AwaitingApproval
+        to ExecutingAction
+        base:description "Warden receives approval from operator; begins execution."
+        state:isTriggeredBy D_approval
+    ]
+
+    relation instance W_T_execution_complete : state:Transition [
+        from ExecutingAction
+        to Observing
+        base:description "Execution completes; return to Observing mode."
+
+    ]
+
+    ref instance Observing [ state:enables processes_activities:A5 ]
+    ref instance Advising [ state:enables processes_activities:A5 ]
+    ref instance AwaitingApproval [ state:enables processes_activities:A6 ]
+    ref instance ExecutingAction [ state:enables processes_activities:A3 ]
+}

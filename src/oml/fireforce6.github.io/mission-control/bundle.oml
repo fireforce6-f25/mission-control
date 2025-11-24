@@ -6,6 +6,10 @@ description bundle <https://fireforce6.github.io/mission-control/bundle#> as d-b
      uses <https://fireforce6.github.io/sierra/bundle#>
 
      // All descriptions included in this bundle
-     includes <https://fireforce6.github.io/mission-control/description1#>
-     includes <https://fireforce6.github.io/mission-control/description2#>
+     includes <https://fireforce6.github.io/mission-control/stakeholders_requirements#>
+     includes <https://fireforce6.github.io/mission-control/missions_capabilities#>
+     includes <https://fireforce6.github.io/mission-control/processes_activities#>
+     includes <https://fireforce6.github.io/mission-control/state_machines#>
+     includes <https://fireforce6.github.io/mission-control/scenarios#>
+
 }

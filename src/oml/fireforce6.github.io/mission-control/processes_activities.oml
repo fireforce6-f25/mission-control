@@ -1,0 +1,95 @@
+@dc:title "Processes and Activities Description"
+@dc:description "Description of processes and activities for the Mission Control system."
+description <https://fireforce6.github.io/mission-control/processes_activities#> as processes_activities {
+    uses <http://purl.org/dc/elements/1.1/> as dc
+    uses <https://fireforce6.github.io/sierra/base#> as base
+    uses <https://fireforce6.github.io/sierra/process#> as process
+
+    extends <https://fireforce6.github.io/mission-control/stakeholders_requirements#> as stakeholders_requirements
+    extends <https://fireforce6.github.io/mission-control/missions_capabilities#> as missions_capabilities
+
+
+
+    instance P1 : process:Process [
+        base:description "Process for Real-Time Fire Data Streaming."
+        process:describes missions_capabilities:C2
+    ]
+
+    instance A1 : process:Activity [
+        base:description "Request live telemetry from Fire Cloud."
+        process:isAllocatedTo missions_capabilities:NetworkInterface
+    ]
+
+    instance A2 : process:Activity [
+        base:description "Receive and parse incoming data stream."
+        process:isAllocatedTo missions_capabilities:DashboardSystem
+    ]
+
+    instance A3 : process:Activity [
+        base:description "Update map visualization layer with new fire and drone data."
+        process:isAllocatedTo missions_capabilities:DashboardSystem
+    ]
+
+    instance D1 : base:Data [
+        base:description "Raw telemetry JSON packets."
+    ]
+
+    instance D2 : base:Data [
+        base:description "Parsed positional and status data for fire and drones."
+    ]
+
+    relation instance F1 : process:DataFlow [
+        from A1
+        to A2
+        process:carries D1
+    ]
+
+    relation instance F2 : process:DataFlow [
+        from A2
+        to A3
+        process:carries D2
+    ]
+
+    ref instance P1 [ process:includes F1 ]
+    ref instance P1 [ process:includes F2 ]
+
+
+    instance P2 : process:Process [
+        base:description "Process for Operator-Warden Communication and Task Approval."
+        process:describes missions_capabilities:C5
+    ]
+
+    instance A4 : process:Activity [
+        base:description "Send operator message to AI Warden."
+        process:isAllocatedTo missions_capabilities:DashboardSystem
+    ]
+
+    instance A5 : process:Activity [
+        base:description "Receive AI Warden response or task proposal."
+        process:isAllocatedTo missions_capabilities:AIFireWarden
+    ]
+
+    instance A6 : process:Activity [
+        base:description "Display AI message in chat interface and await user approval."
+        process:isAllocatedTo stakeholders_requirements:Operator
+    ]
+
+    instance D3 : base:Data [
+        base:description "Message text or structured task command."
+    ]
+
+    relation instance F3 : process:DataFlow [
+        from A4
+        to A5
+        process:carries D3
+    ]
+
+    relation instance F4 : process:DataFlow [
+        from A5
+        to A6
+        process:carries D3
+    ]
+
+    ref instance P2 [ process:includes F3 ]
+    ref instance P2 [ process:includes F4 ]
+ }
