@@ -8,9 +8,13 @@ PREFIX state: <https://fireforce6.github.io/sierra/state#>
 PREFIX oml:       <http://opencaesar.io/oml#>
 
 
-SELECT DISTINCT ?t ?s1 ?s1desc ?s2 ?s2desc ?trigger ?triggerdesc
+SELECT DISTINCT ?sm ?smdesc ?t ?s1 ?s1desc ?s2 ?s2desc ?trigger ?triggerdesc
 
 WHERE {
+  ?sm a state:StateMachine ;
+    base:description ?smdesc ;
+    base:contains ?s1 .
+
   ?t a state:Transition ;
     oml:hasSource ?s1 ;
     oml:hasTarget ?s2 .
