@@ -7515,12 +7515,19 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [73]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ==========================================</span>
 <span class="c1"># Setup: Load dependencies and configure</span>
 <span class="c1"># ==========================================</span>
+
+<span class="c1"># Force reload of visualization modules (if they've been updated)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="k">if</span> <span class="s1">'visualization'</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+    <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">'visualization'</span><span class="p">])</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_repo_root</span><span class="p">,</span> <span class="n">configure_plotly_for_export</span>
 
 <span class="c1"># Configure Plotly for nbconvert</span>
@@ -7555,16 +7562,38 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="1.-System-Requirements">1. System Requirements<a class="anchor-link" href="#1.-System-Requirements">¶</a></h2><p>The following table presents the core system requirements, including their descriptions, formal expressions, and associated stakeholders. These requirements form the foundation of the Mission Control system design.</p>
+<h1 id="Mission-Control-System-Report">Mission Control System Report<a class="anchor-link" href="#Mission-Control-System-Report">¶</a></h1><hr/>
+<h2 id="Abstract">Abstract<a class="anchor-link" href="#Abstract">¶</a></h2><p>California wildfires present an escalating threat requiring rapid, coordinated responses across multiple fire fronts with complex resource allocation decisions. Traditional firefighting approaches struggle to process the volume and velocity of information necessary for effective modern fire management.</p>
+<p>We present the Mission Control Dashboard, a web-based application built with React.js and Django that integrates real-time fire and drone telemetry with AI-driven tactical planning. The system provides operators with unified situational awareness through interactive map visualizations, intelligent alerting mechanisms, and a conversational interface to an AI Fire Warden agent that generates and presents tactical deployment plans for human approval.</p>
+<p>The implemented prototype successfully demonstrates core capabilities including real-time data visualization, notification management, and AI interaction workflows. While currently operating with mock data, the system architecture is designed for seamless integration with production Fire Cloud and Fire Warden services, establishing a foundation for data-driven wildfire response operations.</p>
+<hr/>
+<h2 id="1.-Introduction">1. Introduction<a class="anchor-link" href="#1.-Introduction">¶</a></h2><p>Recent wildfires in California have resulted in devastating damages to communities, threatening lives, destroying property, and disrupting the livelihoods of countless individuals. The increasing frequency and intensity of these fire outbreaks demand a fundamental shift in how we approach wildfire management and response.</p>
+<p>Effectively combating wildfires requires the ability to keep pace with their rapidly changing nature. Firefighting teams must account for the speed at which fires progress, understand how environmental factors such as weather patterns and terrain influence flame intensity across different regions, and make critical decisions about resource allocation - often balancing the preservation of key structures and residential areas among multiple simultaneous fire fronts. Traditional firefighting approaches, while heroic, are fundamentally limited in their capacity to process and respond to the volume and velocity of information required in modern fire scenarios.</p>
+<p>The current technological landscape offers unprecedented opportunities to transform firefighting into a more data-driven, intelligent operation. Advances in network technology now enable the transmission of critical data at speeds unimaginable a decade ago—including real-time streaming of telemetry from drones, satellites, and ground sensors. Simultaneously, the proliferation of large language models (LLMs) capable of ingesting vast amounts of data and reasoning about complex scenarios presents a new paradigm: expert fire analysts can focus on strategic planning while agentic AI systems autonomously execute routine deployments and monitoring tasks.</p>
+<p>These emerging technologies-embodied in our system as a high-speed Fire Cloud data infrastructure and an intelligent AI Fire Warden agent—create both opportunity and necessity for a sophisticated operator interface. In this paper, we present the <strong>Mission Control Dashboard</strong>, a web-based application built with React.js and Django (Python) that integrates these advanced capabilities into a unified command center. The dashboard provides operators and firefighters with real-time visualization of ongoing fires and deployed drones on an interactive map, delivers critical alerts about situational changes such as weather updates or new fire emergencies, and enables intuitive communication with the AI Fire Warden, including the ability to review and approve or deny autonomous action proposals.</p>
+<p>This paper is organized as follows: Section 2 surveys existing dashboard implementations in firefighting and emergency response, while also reviewing the software technologies and theoretical foundations underlying our system. Section 3 presents a comprehensive concept-of-operations, detailing system requirements, stakeholder needs, mission objectives, capabilities, system entities, data flows, behavioral states, and operational scenarios - all formally modeled using ontology-based systems engineering. Section 4 demonstrates the dashboard prototype through screenshots and a walkthrough of common user scenarios. Finally, Section 5 discusses the limitations of the current implementation and outlines directions for future enhancement.</p>
+<hr/>
+<h2 id="2.-Background-&amp;-Related-Work">2. Background &amp; Related Work<a class="anchor-link" href="#2.-Background-&amp;-Related-Work">¶</a></h2><h3 id="2.1-Existing-Fire-Management-Systems">2.1 Existing Fire Management Systems<a class="anchor-link" href="#2.1-Existing-Fire-Management-Systems">¶</a></h3><p>A prominent example of fire management dashboard technology is the <strong>Fire Information for Resource Management System (FIRMS)</strong> for US/Canada, a collaborative effort between NASA and the USDA Forest Service [1]. FIRMS provides satellite-based imagery of ongoing fires across North America, offering both historical archives and near-real-time data on fire locations and intensity. The system has proven valuable for large-scale fire monitoring and has been widely adopted by emergency management agencies.</p>
+<p>However, FIRMS exhibits several limitations when considered in the context of modern firefighting needs. First, the system relies exclusively on satellite imagery as its data source, which differs fundamentally from the multi-modal sensor architecture envisioned in the Fire Force VI challenge that incorporates drone telemetry alongside satellite data. Drones offer higher spatial resolution, more frequent update cycles, and the ability to operate beneath cloud cover, which are advantages that satellite-only systems cannot provide. Second, FIRMS functions primarily as a visualization tool for fire locations and does not integrate critical operational features such as real-time alerting for significant situational changes or communication interfaces for coordination with autonomous agents. Third, as fire situations become more complex with multiple simultaneous fronts, FIRMS' interface can become cluttered and difficult to interpret under high-stress operational conditions (Figure 1).</p>
+<p><img alt="Firms" src="./Images/FIRMS.png"/>
+Figure 1: A screenshot of the FIRMS Mission Control Dashboard</p>
+<h3 id="2.2-Mission-Control-Dashboard:-Design-Principles-and-Differentiation">2.2 Mission Control Dashboard: Design Principles and Differentiation<a class="anchor-link" href="#2.2-Mission-Control-Dashboard:-Design-Principles-and-Differentiation">¶</a></h3><p>Our proposed Mission Control Dashboard addresses these limitations through three key innovations. First, the system integrates real-time drone telemetry alongside satellite data, providing operators with a more comprehensive and granular view of fire dynamics. Second, the dashboard consolidates all critical operational functions into a unified interface: the live map view, contextual notifications of significant events (weather changes, new fire detections, drone status updates), and direct communication channels with the AI Fire Warden. This approach reduces cognitive load during emergency operations by eliminating the need to switch between disparate systems. Third, the interface prioritizes clarity and usability, with a clean design optimized for rapid information comprehension under stressful conditions.</p>
+<h3 id="2.3-Technology-Stack">2.3 Technology Stack<a class="anchor-link" href="#2.3-Technology-Stack">¶</a></h3><p>The Mission Control Dashboard leverages modern web technologies selected for their maturity, performance characteristics, and development velocity.</p>
+<p><strong>Frontend Architecture</strong>: The client interface is built with <strong>React.js</strong>, a component-based JavaScript library that enables rapid prototyping and benefits from an extensive ecosystem of supporting packages. We employ <strong>TanStack Query</strong> for sophisticated data management - this library provides automatic caching of network requests, background refetching, and centralized API state management, significantly improving application responsiveness and reducing server load. For geospatial visualization, we integrate <strong>Leaflet.js</strong>, an open-source mapping library that supports custom marker overlays and and interactive map controls essential for displaying fire perimeters and drone positions.</p>
+<p><strong>Backend Architecture</strong>: The server infrastructure is implemented using <strong>Django</strong>, a high-level Python web framework known for its rapid development capabilities. Django provides robust support for RESTful API endpoints through Django REST Framework, enabling synchronous data queries for historical information and system configuration. For real-time data streaming - critical for live fire updates and drone telemetry - we leverage <strong>Django Channels</strong>, which extends Django to support WebSocket protocols. This bidirectional communication channel allows the server to push updates to connected clients immediately as new data arrives from the Fire Cloud, ensuring operators always view the most current situational awareness picture.</p>
+<p>This technology stack balances development agility with production-grade performance, enabling iterative refinement of the user experience while maintaining the reliability and scalability required for emergency response systems.</p>
+<hr/>
+<h2 id="3.-System-Architecture-and-Design">3. System Architecture and Design<a class="anchor-link" href="#3.-System-Architecture-and-Design">¶</a></h2><p>This section presents the conceptual architecture of the Mission Control Dashboard through six interconnected perspectives: stakeholder requirements, mission-capability mappings, entity definitions, operational activities, behavioral state machines, and operational scenarios. These views collectively form a comprehensive concept of operations that guides the system's design and implementation.</p>
+<h3 id="3.1.-Stakeholders-and-Requirements">3.1. Stakeholders and Requirements<a class="anchor-link" href="#3.1.-Stakeholders-and-Requirements">¶</a></h3><p>The system's primary stakeholders consist of personnel involved in firefighting operations, including both on-the-field firefighters and command center operators. The system requirements are derived directly from stakeholder needs, encompassing real-time mapping capabilities, historical fire visualization, adaptive user experience, and related functionalities. The table below presents a comprehensive summary of these requirements.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f736bd7d">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6de3df00">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [74]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Load and display requirements</span>
@@ -7582,7 +7611,7 @@ a.anchor-link {
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[74]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[2]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
 <div>
 <style scoped="">
@@ -7666,25 +7695,25 @@ a.anchor-link {
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=14e4006e">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=afe5bdca">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="2.-Requirements-Capability-Traceability">2. Requirements-Capability Traceability<a class="anchor-link" href="#2.-Requirements-Capability-Traceability">¶</a></h2><p>The graph below illustrates the relationships between system requirements (R), capabilities (C), missions (M), and sub-capabilities. This traceability matrix ensures that all requirements are addressed by specific system capabilities.</p>
+<h3 id="3.2.-Missions-and-Capabilities">3.2. Missions and Capabilities<a class="anchor-link" href="#3.2.-Missions-and-Capabilities">¶</a></h3><p>System requirements map to core missions and their associated capabilities. For example, the requirement for historical views translates to the mission of enabling temporal fire analysis, which in turn necessitates the capability to provide graphical representations of fire states at arbitrary time points through a timeline slider interface. The figure below illustrates the complete network of requirements, missions, and capabilities (hover over nodes for detailed descriptions).</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2f88fd07">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cbf2a78e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [75]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Display Requirements-Capability-SubCapability graph</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Display Requirements-Missions-Capabilities graph</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">display_missions_graph</span>
 
 <span class="n">missions_nodes</span> <span class="o">=</span> <span class="n">display_missions_graph</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
@@ -7719,35 +7748,35 @@ graph LR
     C6["C6"]
     C7["C7"]
     R3["R3"]
+    C5["C5"]
     M3["M3"]
     C4["C4"]
-    C5["C5"]
     R4["R4"]
     R5["R5"]
     R6["R6"]
     R7["R7"]
-    R4 --&gt; M3
-    M3 --&gt; C5
+    M2 --&gt; M1
+    R1 --&gt; M1
     R3 --&gt; C5
-    M3 --&gt; C4
-    R2 --&gt; M4
-    M1 --&gt; C1
-    M4 --&gt; C6
-    M2 --&gt; C2
-    M2 --&gt; C8
-    R7 --&gt; M4
-    R6 --&gt; C8
-    R6 --&gt; M2
-    R3 --&gt; M3
     R7 --&gt; C6
+    R3 --&gt; M3
+    R2 --&gt; M4
+    R6 --&gt; M2
+    R2 --&gt; M2
+    R6 --&gt; C8
+    R7 --&gt; M4
+    M2 --&gt; C2
+    M2 --&gt; C3
+    R4 --&gt; M3
+    M1 --&gt; C1
+    M3 --&gt; C4
+    M3 --&gt; C5
+    R5 --&gt; M1
     M4 --&gt; C7
     R1 --&gt; M2
-    M2 --&gt; M1
     R2 --&gt; C7
-    R1 --&gt; M1
-    R2 --&gt; M2
-    R5 --&gt; M1
-    M2 --&gt; C3
+    M2 --&gt; C8
+    M4 --&gt; C6
 
     style R1 fill:#f08080,stroke:#333,stroke-width:2px
     style M1 fill:#87ceeb,stroke:#333,stroke-width:2px
@@ -7761,9 +7790,9 @@ graph LR
     style C6 fill:#add8e6,stroke:#333,stroke-width:2px
     style C7 fill:#add8e6,stroke:#333,stroke-width:2px
     style R3 fill:#f08080,stroke:#333,stroke-width:2px
+    style C5 fill:#87ceeb,stroke:#333,stroke-width:2px
     style M3 fill:#87ceeb,stroke:#333,stroke-width:2px
     style C4 fill:#add8e6,stroke:#333,stroke-width:2px
-    style C5 fill:#add8e6,stroke:#333,stroke-width:2px
     style R4 fill:#f08080,stroke:#333,stroke-width:2px
     style R5 fill:#f08080,stroke:#333,stroke-width:2px
     style R6 fill:#f08080,stroke:#333,stroke-width:2px
@@ -7795,12 +7824,12 @@ graph LR
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3a9feea2">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9678cc15">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [76]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Enable interactive tooltips for missions graph</span>
@@ -7822,7 +7851,7 @@ graph LR
 <div id="missions-tooltip" style="position: fixed; display: none; background: rgba(0,0,0,0.85); color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none; z-index: 10000; max-width: 300px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>
 <script>
 (function() {
-    const missionsTooltipData = {"nodes": {"R1": "Real-Time Map<br><br><em>Expression:</em> The system shall display real-time fire and drone locations.", "M1": "Allow Analysis of Fire at Any Point in Time.", "C1": "Enable view of fire state from specific time points.", "M2": "Enable Real-Time Data Stream and Awareness.", "C2": "Constantly fetch live fire and drone updates.", "C3": "Fetch and visualize new notifications.", "C8": "Integrate Fire Cloud telemetry for environment and drone data.", "R2": "Critical Alerts<br><br><em>Expression:</em> The system shall show real-time critical alerts and notifications.", "M4": "Ensure Safe and Controlled Decision Support.", "C6": "Permit human approval of AI-generated tasks.", "C7": "Display critical alerts by severity with acknowledgment function.", "R3": "AI Warden Interface<br><br><em>Expression:</em> The system shall enable direct, smooth communication with the AI Fire Warden.", "M3": "Provide Responsive, Easy-to-Use Interface.", "C4": "Allow adjustment of dashboard color schemes and layouts.", "C5": "Enable chat-like interface for AI Warden communication.", "R4": "Adaptive User Experience<br><br><em>Expression:</em> The system shall remain functional under field conditions (heat, low connectivity).", "R5": "Historical Views<br><br><em>Expression:</em> The system shall support views of historical fire data for temporal analysis.", "R6": "Interoperability with Fire Cloud<br><br><em>Expression:</em> The system shall ingest and interpret data streams from Fire Cloud.", "R7": "Decision Approval Mechanism<br><br><em>Expression:</em> The system shall allow human approval for AI Fire Warden's high-priority actions."}};
+    const missionsTooltipData = {"nodes": {"R1": "Real-Time Map<br><br><em>Expression:</em> The system shall display real-time fire and drone locations.", "M1": "Allow Analysis of Fire at Any Point in Time.", "C1": "Enable view of fire state from specific time points.", "M2": "Enable Real-Time Data Stream and Awareness.", "C2": "Constantly fetch live fire and drone updates.", "C3": "Fetch and visualize new notifications.", "C8": "Integrate Fire Cloud telemetry for environment and drone data.", "R2": "Critical Alerts<br><br><em>Expression:</em> The system shall show real-time critical alerts and notifications.", "M4": "Ensure Safe and Controlled Decision Support.", "C6": "Permit human approval of AI-generated tasks.", "C7": "Display critical alerts by severity with acknowledgment function.", "R3": "AI Warden Interface<br><br><em>Expression:</em> The system shall enable direct, smooth communication with the AI Fire Warden.", "C5": "Enable chat-like interface for AI Warden communication.", "M3": "Provide Responsive, Easy-to-Use Interface.", "C4": "Allow adjustment of dashboard color schemes and layouts.", "R4": "Adaptive User Experience<br><br><em>Expression:</em> The system shall remain functional under field conditions (heat, low connectivity).", "R5": "Historical Views<br><br><em>Expression:</em> The system shall support views of historical fire data for temporal analysis.", "R6": "Interoperability with Fire Cloud<br><br><em>Expression:</em> The system shall ingest and interpret data streams from Fire Cloud.", "R7": "Decision Approval Mechanism<br><br><em>Expression:</em> The system shall allow human approval for AI Fire Warden's high-priority actions."}};
     
     function attachMissionsTooltips() {
         const svg = document.querySelector('#missions-graph svg');
@@ -7901,22 +7930,22 @@ graph LR
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4eb7f1a1">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=09668eed">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="3.-Capability-Entity-Mapping">3. Capability-Entity Mapping<a class="anchor-link" href="#3.-Capability-Entity-Mapping">¶</a></h2><p>This visualization shows which entities (actors/components) in the system implement each capability. Understanding these relationships is crucial for system design and resource allocation.</p>
+<h3 id="3.3.-Entities">3.3. Entities<a class="anchor-link" href="#3.3.-Entities">¶</a></h3><p>System capabilities are realized through the coordinated action of various entities. For example, the capability to visualize historical data relies on data acquired from the Fire Cloud infrastructure. The figure below presents the complete mapping between capabilities and their implementing entities (hover over nodes for detailed descriptions).</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3aea46bd">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1adaba46">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [77]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Display Capability-Entity graph</span>
@@ -7942,48 +7971,48 @@ graph LR
 <div style="margin: 20px 0;">
 <div class="mermaid" id="entities-graph">
 graph LR
-    C1["C1"]
-    DashboardSystem["DashboardSystem"]
     C2["C2"]
-    FireCloud["FireCloud"]
     NetworkInterface["NetworkInterface"]
-    C3["C3"]
-    C4["C4"]
+    DashboardSystem["DashboardSystem"]
+    FireCloud["FireCloud"]
     C5["C5"]
     AIFireWarden["AIFireWarden"]
+    C1["C1"]
+    C3["C3"]
+    C4["C4"]
     C6["C6"]
     Operator["Operator"]
     C7["C7"]
     SafetyOfficer["SafetyOfficer"]
     C8["C8"]
     SystemEngineer["SystemEngineer"]
-    C2 --&gt; FireCloud
-    C8 --&gt; DashboardSystem
-    C7 --&gt; DashboardSystem
     C1 --&gt; DashboardSystem
-    C6 --&gt; AIFireWarden
-    C2 --&gt; DashboardSystem
+    C3 --&gt; DashboardSystem
     C4 --&gt; DashboardSystem
-    C6 --&gt; Operator
-    C5 --&gt; AIFireWarden
-    C8 --&gt; SystemEngineer
-    C2 --&gt; NetworkInterface
-    C3 --&gt; FireCloud
-    C6 --&gt; DashboardSystem
     C7 --&gt; SafetyOfficer
     C8 --&gt; FireCloud
-    C3 --&gt; DashboardSystem
+    C7 --&gt; DashboardSystem
+    C6 --&gt; Operator
+    C6 --&gt; AIFireWarden
+    C2 --&gt; FireCloud
+    C5 --&gt; AIFireWarden
     C5 --&gt; DashboardSystem
+    C6 --&gt; DashboardSystem
+    C8 --&gt; DashboardSystem
+    C2 --&gt; NetworkInterface
+    C2 --&gt; DashboardSystem
+    C3 --&gt; FireCloud
+    C8 --&gt; SystemEngineer
 
-    style C1 fill:#87ceeb,stroke:#333,stroke-width:2px
-    style DashboardSystem fill:#90ee90,stroke:#333,stroke-width:2px
     style C2 fill:#87ceeb,stroke:#333,stroke-width:2px
-    style FireCloud fill:#90ee90,stroke:#333,stroke-width:2px
     style NetworkInterface fill:#90ee90,stroke:#333,stroke-width:2px
-    style C3 fill:#87ceeb,stroke:#333,stroke-width:2px
-    style C4 fill:#87ceeb,stroke:#333,stroke-width:2px
+    style DashboardSystem fill:#90ee90,stroke:#333,stroke-width:2px
+    style FireCloud fill:#90ee90,stroke:#333,stroke-width:2px
     style C5 fill:#87ceeb,stroke:#333,stroke-width:2px
     style AIFireWarden fill:#90ee90,stroke:#333,stroke-width:2px
+    style C1 fill:#87ceeb,stroke:#333,stroke-width:2px
+    style C3 fill:#87ceeb,stroke:#333,stroke-width:2px
+    style C4 fill:#87ceeb,stroke:#333,stroke-width:2px
     style C6 fill:#87ceeb,stroke:#333,stroke-width:2px
     style Operator fill:#90ee90,stroke:#333,stroke-width:2px
     style C7 fill:#87ceeb,stroke:#333,stroke-width:2px
@@ -8013,12 +8042,12 @@ graph LR
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=973996ce">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b7a0a17d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [78]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Enable interactive tooltips for entities graph</span>
@@ -8040,7 +8069,7 @@ graph LR
 <div id="entities-tooltip" style="position: fixed; display: none; background: rgba(0,0,0,0.85); color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none; z-index: 10000; max-width: 300px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>
 <script>
 (function() {
-    const entitiesTooltipData = {"nodes": {"C1": "Enable view of fire state from specific time points.", "DashboardSystem": "The Mission Control Dashboard software system.", "C2": "Constantly fetch live fire and drone updates.", "FireCloud": "External service providing fire, drone, and satellite telemetry.", "NetworkInterface": "Handles data synchronization between dashboard and cloud services.", "C3": "Fetch and visualize new notifications.", "C4": "Allow adjustment of dashboard color schemes and layouts.", "C5": "Enable chat-like interface for AI Warden communication.", "AIFireWarden": "Autonomous AI agent capable of monitoring and suggesting fire management actions.", "C6": "Permit human approval of AI-generated tasks.", "Operator": "Tele-operator or control-room staff monitoring and directing fire containment operations.", "C7": "Display critical alerts by severity with acknowledgment function.", "SafetyOfficer": "Ensures alerts, communications, and responses comply with safety protocols.", "C8": "Integrate Fire Cloud telemetry for environment and drone data.", "SystemEngineer": "Responsible for ensuring system reliability and integration with Fire Cloud and AI Warden."}};
+    const entitiesTooltipData = {"nodes": {"C2": "Constantly fetch live fire and drone updates.", "NetworkInterface": "Handles data synchronization between dashboard and cloud services.", "DashboardSystem": "The Mission Control Dashboard software system.", "FireCloud": "External service providing fire, drone, and satellite telemetry.", "C5": "Enable chat-like interface for AI Warden communication.", "AIFireWarden": "Autonomous AI agent capable of monitoring and suggesting fire management actions.", "C1": "Enable view of fire state from specific time points.", "C3": "Fetch and visualize new notifications.", "C4": "Allow adjustment of dashboard color schemes and layouts.", "C6": "Permit human approval of AI-generated tasks.", "Operator": "Tele-operator or control-room staff monitoring and directing fire containment operations.", "C7": "Display critical alerts by severity with acknowledgment function.", "SafetyOfficer": "Ensures alerts, communications, and responses comply with safety protocols.", "C8": "Integrate Fire Cloud telemetry for environment and drone data.", "SystemEngineer": "Responsible for ensuring system reliability and integration with Fire Cloud and AI Warden."}};
     
     function attachEntitiesTooltips() {
         const svg = document.querySelector('#entities-graph svg');
@@ -8119,22 +8148,22 @@ graph LR
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d88a0f3e">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e58b1eb3">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="4.-Activity-Data-Flow">4. Activity Data Flow<a class="anchor-link" href="#4.-Activity-Data-Flow">¶</a></h2><p>The activity graph depicts the flow of data between different system activities. Edge labels indicate the data elements being transferred, providing insight into information dependencies and processing workflows.</p>
+<h3 id="3.4.-Activities">3.4. Activities<a class="anchor-link" href="#3.4.-Activities">¶</a></h3><p>The system comprises various data flow activities, with two primary processes being critical to operations: real-time data streaming and communication with the Fire Warden. The figure below depicts these activities and their data dependencies (hover over elements for detailed descriptions).</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4e2009b2">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=04cdabde">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [79]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Display Activity Data Flow graphs grouped by Process</span>
@@ -8254,12 +8283,12 @@ graph LR
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=57c9cef2">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c56fc405">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [80]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Enable interactive tooltips for activities graphs</span>
@@ -8511,28 +8540,28 @@ graph LR
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=07646257">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9404330b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="5.-State-Machine-Behavior">5. State Machine Behavior<a class="anchor-link" href="#5.-State-Machine-Behavior">¶</a></h2><p>The state machine diagram below represents the behavioral states and transitions of key system components. Hover over states and transitions to see detailed descriptions of each element.</p>
+<h3 id="3.5.-State-Machines">3.5. State Machines<a class="anchor-link" href="#3.5.-State-Machines">¶</a></h3><p>System activities are formally modeled using state machines that define operational states and their transitions. For example, the dashboard transitions from a monitoring state to alert processing upon notification receipt. The figure below presents these state machine models (hover over states and transitions for detailed descriptions).</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0c687984">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=70a20a5c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [81]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Display State Machine diagram</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Display State Machine diagrams</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">display_statemachine</span>
 
-<span class="n">statemachine_nodes</span><span class="p">,</span> <span class="n">statemachine_edges</span> <span class="o">=</span> <span class="n">display_statemachine</span><span class="p">()</span>
+<span class="n">statemachines_dict</span> <span class="o">=</span> <span class="n">display_statemachine</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -8544,30 +8573,36 @@ graph LR
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+================================================================================
+State Machine: AIFireWardenStateMachine
+Description: State machine modeling the AI Fire Warden behavior.
+================================================================================
+
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
   mermaid.initialize({ startOnLoad: true, theme: 'default' });
 </script>
-<div class="mermaid" id="state-machine-diagram">
+<div style="margin: 20px 0;">
+<h3>AIFireWardenStateMachine: State machine modeling the AI Fire Warden behavior.</h3>
+<div class="mermaid" id="state-machine-AIFireWardenStateMachine">
 stateDiagram-v2
     direction LR
 
-    AlertHandling --&gt; Monitoring : D_approval
-    AlertHandling --&gt; DecisionPending : D_ai_proposal
-    DecisionPending --&gt; Monitoring : D_approval
-    Monitoring --&gt; HistoricalReview : D_history_request
-    HistoricalReview --&gt; Monitoring : D_history_response
-    Idle --&gt; Monitoring : D_alert
-    Monitoring --&gt; AlertHandling : D_alert
-    Monitoring --&gt; DashboardFinal
-    DashboardInitial --&gt; Monitoring : D_history_response
-    Observing --&gt; Advising : D_alert
-    ExecutingAction --&gt; Observing
-    WardenInitial --&gt; Observing
     Advising --&gt; AwaitingApproval : D_ai_proposal
     AwaitingApproval --&gt; ExecutingAction : D_approval
+    ExecutingAction --&gt; Observing
+    Observing --&gt; Advising : D_alert
+    WardenInitial --&gt; Observing
 
+  </div>
 </div>
 <style>
 .mermaid {
@@ -8577,20 +8612,74 @@ stateDiagram-v2
 </style>
 </div>
 </div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+================================================================================
+State Machine: MissionControlDashboardStateMachine
+Description: State machine modeling the Mission Control Dashboard operational modes.
+================================================================================
+
+</pre>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=539c9d91">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'default' });
+</script>
+<div style="margin: 20px 0;">
+<h3>MissionControlDashboardStateMachine: State machine modeling the Mission Control Dashboard operational modes.</h3>
+<div class="mermaid" id="state-machine-MissionControlDashboardStateMachine">
+stateDiagram-v2
+    direction LR
+
+    AlertHandling --&gt; Monitoring : D_alert_acknowledgement
+    AlertHandling --&gt; DecisionPending : D_ai_proposal
+    DashboardInitial --&gt; Monitoring : D_history_response
+    DecisionPending --&gt; Monitoring : D_approval
+    HistoricalReview --&gt; Monitoring : D_history_response
+    Idle --&gt; Monitoring : D_alert
+    Monitoring --&gt; HistoricalReview : D_history_request
+    Monitoring --&gt; AlertHandling : D_alert
+    Monitoring --&gt; DashboardFinal
+    Monitoring --&gt; Idle
+
+  </div>
+</div>
+<style>
+.mermaid {
+    text-align: center;
+    margin: 20px 0;
+}
+</style>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+✅ Visualized 2 state machines
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cd02a2bf">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [82]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Enable interactive tooltips for state machine</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Enable interactive tooltips for state machines</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">enable_statemachine_tooltips</span>
 
-<span class="n">enable_statemachine_tooltips</span><span class="p">(</span><span class="n">statemachine_nodes</span><span class="p">,</span> <span class="n">statemachine_edges</span><span class="p">)</span>
+<span class="n">enable_statemachine_tooltips</span><span class="p">(</span><span class="n">statemachines_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8603,101 +8692,213 @@ stateDiagram-v2
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
-<div id="sm-tooltip" style="position: fixed; display: none; background: rgba(0,0,0,0.85); color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none; z-index: 10000; max-width: 300px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>
 <script>
 (function() {
-    const smTooltipData = {"nodes": {"AlertHandling": "Dashboard is handling a critical alert; displaying pop-up and workflow.", "Monitoring": "Dashboard is actively monitoring live data and updating the map.", "DecisionPending": "Dashboard is awaiting human approval for an AI-suggested task.", "HistoricalReview": "Dashboard is in historical/time-travel view mode (slider engaged).", "Idle": "Dashboard is idle or on standby; not actively streaming.", "DashboardFinal": "Dashboard session ended / system shutdown.", "DashboardInitial": "Initial dashboard state (startup / not connected).", "Observing": "Warden monitors telemetry and looks for anomalies.", "Advising": "Warden formulates a recommendation or task (advisory mode).", "ExecutingAction": "Warden is executing an approved mitigation task (autonomous actions).", "WardenInitial": "AI Warden startup / idle.", "AwaitingApproval": "Warden has proposed an action and is awaiting human approval."}, "edges": {"AlertHandling->Monitoring": {"trigger": "D_approval", "description": "Operator approval decision (approve / reject) for AI action."}, "AlertHandling->DecisionPending": {"trigger": "D_ai_proposal", "description": "Structured task proposal from AI Fire Warden (may require approval)."}, "DecisionPending->Monitoring": {"trigger": "D_approval", "description": "Operator approval decision (approve / reject) for AI action."}, "Monitoring->HistoricalReview": {"trigger": "D_history_request", "description": "Request for historical telemetry/time-series data."}, "HistoricalReview->Monitoring": {"trigger": "D_history_response", "description": "Historical telemetry/time-series data returned from Fire Cloud."}, "Idle->Monitoring": {"trigger": "D_alert", "description": "Alert signal (critical notification) produced by FireCloud or AIFireWarden."}, "Monitoring->AlertHandling": {"trigger": "D_alert", "description": "Alert signal (critical notification) produced by FireCloud or AIFireWarden."}, "Monitoring->DashboardFinal": {"trigger": "", "description": ""}, "DashboardInitial->Monitoring": {"trigger": "D_history_response", "description": "Historical telemetry/time-series data returned from Fire Cloud."}, "Observing->Advising": {"trigger": "D_alert", "description": "Alert signal (critical notification) produced by FireCloud or AIFireWarden."}, "ExecutingAction->Observing": {"trigger": "", "description": ""}, "WardenInitial->Observing": {"trigger": "", "description": ""}, "Advising->AwaitingApproval": {"trigger": "D_ai_proposal", "description": "Structured task proposal from AI Fire Warden (may require approval)."}, "AwaitingApproval->ExecutingAction": {"trigger": "D_approval", "description": "Operator approval decision (approve / reject) for AI action."}}};
-    
-    function attachMermaidTooltips() {
-        const svg = document.querySelector('#state-machine-diagram svg');
-        if (!svg) {
-            setTimeout(attachMermaidTooltips, 500);
-            return;
-        }
+
+    // Tooltips for AIFireWardenStateMachine
+    (function() {
+        const tooltipData = {"nodes": {"Advising": "Warden formulates a recommendation or task (advisory mode).", "AwaitingApproval": "Warden has proposed an action and is awaiting human approval.", "ExecutingAction": "Warden is executing an approved mitigation task (autonomous actions).", "Observing": "Warden monitors telemetry and looks for anomalies.", "WardenInitial": "AI Warden startup / idle."}, "edges": {"Advising->AwaitingApproval": {"trigger": "D_ai_proposal", "description": "Structured task proposal from AI Fire Warden (may require approval)."}, "AwaitingApproval->ExecutingAction": {"trigger": "D_approval", "description": "Operator approval decision (approve / reject) for AI action."}, "ExecutingAction->Observing": {"trigger": "", "description": ""}, "Observing->Advising": {"trigger": "D_alert", "description": "Alert signal (critical notification) produced by FireCloud or AIFireWarden."}, "WardenInitial->Observing": {"trigger": "", "description": ""}}};
+        const smId = 'state-machine-AIFireWardenStateMachine';
         
-        const tooltip = document.getElementById('sm-tooltip');
-        if (!tooltip) return;
-        
-        function showTooltip(content, e) {
-            tooltip.innerHTML = content;
-            tooltip.style.display = 'block';
-            tooltip.style.left = (e.clientX + 15) + 'px';
-            tooltip.style.top = (e.clientY + 15) + 'px';
-        }
-        
-        function hideTooltip() {
-            tooltip.style.display = 'none';
-        }
-        
-        function updateTooltipPosition(e) {
-            tooltip.style.left = (e.clientX + 15) + 'px';
-            tooltip.style.top = (e.clientY + 15) + 'px';
-        }
-        
-        const states = svg.querySelectorAll('g.node');
-        states.forEach(state => {
-            const stateName = state.getAttribute('data-id');
-            if (!stateName || !smTooltipData.nodes[stateName]) return;
-            
-            const tooltipContent = `<strong>${stateName}</strong><br>${smTooltipData.nodes[stateName]}`;
-            
-            const rect = state.querySelector('rect.basic');
-            const textElements = state.querySelectorAll('text, foreignObject');
-            
-            if (rect) {
-                rect.style.cursor = 'pointer';
-                rect.addEventListener('mouseenter', (e) => showTooltip(tooltipContent, e));
-                rect.addEventListener('mousemove', updateTooltipPosition);
-                rect.addEventListener('mouseleave', hideTooltip);
+        function attachTooltips() {
+            const svg = document.querySelector('#' + smId + ' svg');
+            if (!svg) {
+                setTimeout(attachTooltips, 500);
+                return;
             }
             
-            textElements.forEach(textEl => {
-                textEl.style.cursor = 'pointer';
-                textEl.addEventListener('mouseenter', (e) => showTooltip(tooltipContent, e));
-                textEl.addEventListener('mousemove', updateTooltipPosition);
-                textEl.addEventListener('mouseleave', hideTooltip);
-            });
-        });
-        
-        const edgeLabels = svg.querySelectorAll('g.edgeLabel');
-        edgeLabels.forEach(edgeLabel => {
-            const span = edgeLabel.querySelector('.edgeLabel');
-            if (!span) return;
+            let tooltip = document.getElementById(smId + '-tooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.id = smId + '-tooltip';
+                tooltip.style.cssText = 'position: fixed; display: none; background: rgba(0,0,0,0.85); color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none; z-index: 10000; max-width: 300px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);';
+                document.body.appendChild(tooltip);
+            }
             
-            const triggerName = span.textContent.trim();
-            if (!triggerName) return;
+            function showTooltip(content, e) {
+                tooltip.innerHTML = content;
+                tooltip.style.display = 'block';
+                tooltip.style.left = (e.clientX + 15) + 'px';
+                tooltip.style.top = (e.clientY + 15) + 'px';
+            }
             
-            for (const [edgeKey, edgeData] of Object.entries(smTooltipData.edges)) {
-                if (edgeData.trigger === triggerName && edgeData.description) {
-                    const tooltipContent = `<strong>${triggerName}</strong><br>${edgeData.description}`;
-                    
-                    const rect = edgeLabel.querySelector('rect');
-                    const textElements = edgeLabel.querySelectorAll('text, foreignObject');
-                    
-                    if (rect) {
-                        rect.style.cursor = 'pointer';
-                        rect.addEventListener('mouseenter', (e) => showTooltip(tooltipContent, e));
-                        rect.addEventListener('mousemove', updateTooltipPosition);
-                        rect.addEventListener('mouseleave', hideTooltip);
-                    }
-                    
-                    textElements.forEach(textEl => {
-                        textEl.style.cursor = 'pointer';
-                        textEl.addEventListener('mouseenter', (e) => showTooltip(tooltipContent, e));
-                        textEl.addEventListener('mousemove', updateTooltipPosition);
-                        textEl.addEventListener('mouseleave', hideTooltip);
-                    });
-                    break;
+            function hideTooltip() {
+                tooltip.style.display = 'none';
+            }
+            
+            function updateTooltipPosition(e) {
+                tooltip.style.left = (e.clientX + 15) + 'px';
+                tooltip.style.top = (e.clientY + 15) + 'px';
+            }
+            
+            const states = svg.querySelectorAll('g.node');
+            states.forEach(state => {
+                const stateName = state.getAttribute('data-id');
+                if (!stateName || !tooltipData.nodes[stateName]) return;
+                
+                const tooltipContent = `<strong>${stateName}</strong><br>${tooltipData.nodes[stateName]}`;
+                
+                const rect = state.querySelector('rect.basic');
+                const textElements = state.querySelectorAll('text, foreignObject');
+                
+                if (rect) {
+                    rect.style.cursor = 'pointer';
+                    rect.addEventListener('mouseenter', (e) => showTooltip(tooltipContent, e));
+                    rect.addEventListener('mousemove', updateTooltipPosition);
+                    rect.addEventListener('mouseleave', hideTooltip);
                 }
+                
+                textElements.forEach(textEl => {
+                    textEl.style.cursor = 'pointer';
+                    textEl.addEventListener('mouseenter', (e) => showTooltip(tooltipContent, e));
+                    textEl.addEventListener('mousemove', updateTooltipPosition);
+                    textEl.addEventListener('mouseleave', hideTooltip);
+                });
+            });
+            
+            const edgeLabels = svg.querySelectorAll('g.edgeLabel');
+            edgeLabels.forEach(edgeLabel => {
+                const span = edgeLabel.querySelector('.edgeLabel');
+                if (!span) return;
+                
+                const triggerName = span.textContent.trim();
+                if (!triggerName) return;
+                
+                for (const [edgeKey, edgeData] of Object.entries(tooltipData.edges)) {
+                    if (edgeData.trigger === triggerName && edgeData.description) {
+                        const tooltipContent = `<strong>${triggerName}</strong><br>${edgeData.description}`;
+                        
+                        const rect = edgeLabel.querySelector('rect');
+                        const textElements = edgeLabel.querySelectorAll('text, foreignObject');
+                        
+                        if (rect) {
+                            rect.style.cursor = 'pointer';
+                            rect.addEventListener('mouseenter', (e) => showTooltip(tooltipContent, e));
+                            rect.addEventListener('mousemove', updateTooltipPosition);
+                            rect.addEventListener('mouseleave', hideTooltip);
+                        }
+                        
+                        textElements.forEach(textEl => {
+                            textEl.style.cursor = 'pointer';
+                            textEl.addEventListener('mouseenter', (e) => showTooltip(tooltipContent, e));
+                            textEl.addEventListener('mousemove', updateTooltipPosition);
+                            textEl.addEventListener('mouseleave', hideTooltip);
+                        });
+                        break;
+                    }
+                }
+            });
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', attachTooltips);
+        } else {
+            attachTooltips();
+        }
+    })();
+
+    // Tooltips for MissionControlDashboardStateMachine
+    (function() {
+        const tooltipData = {"nodes": {"AlertHandling": "Dashboard is handling a critical alert; displaying pop-up and workflow.", "Monitoring": "Dashboard is actively monitoring live data and updating the map.", "DecisionPending": "Dashboard is awaiting human approval for an AI-suggested task.", "DashboardInitial": "Initial dashboard state (startup / not connected).", "HistoricalReview": "Dashboard is in historical/time-travel view mode (slider engaged).", "Idle": "Dashboard is idle or on standby; not actively streaming.", "DashboardFinal": "Dashboard session ended / system shutdown."}, "edges": {"AlertHandling->Monitoring": {"trigger": "D_alert_acknowledgement", "description": "Operator acknowledgement of a notification or alert (non-approval scenario)."}, "AlertHandling->DecisionPending": {"trigger": "D_ai_proposal", "description": "Structured task proposal from AI Fire Warden (may require approval)."}, "DashboardInitial->Monitoring": {"trigger": "D_history_response", "description": "Historical telemetry/time-series data returned from Fire Cloud."}, "DecisionPending->Monitoring": {"trigger": "D_approval", "description": "Operator approval decision (approve / reject) for AI action."}, "HistoricalReview->Monitoring": {"trigger": "D_history_response", "description": "Historical telemetry/time-series data returned from Fire Cloud."}, "Idle->Monitoring": {"trigger": "D_alert", "description": "Alert signal (critical notification) produced by FireCloud or AIFireWarden."}, "Monitoring->HistoricalReview": {"trigger": "D_history_request", "description": "Request for historical telemetry/time-series data."}, "Monitoring->AlertHandling": {"trigger": "D_alert", "description": "Alert signal (critical notification) produced by FireCloud or AIFireWarden."}, "Monitoring->DashboardFinal": {"trigger": "", "description": ""}, "Monitoring->Idle": {"trigger": "", "description": ""}}};
+        const smId = 'state-machine-MissionControlDashboardStateMachine';
+        
+        function attachTooltips() {
+            const svg = document.querySelector('#' + smId + ' svg');
+            if (!svg) {
+                setTimeout(attachTooltips, 500);
+                return;
             }
-        });
-    }
-    
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', attachMermaidTooltips);
-    } else {
-        attachMermaidTooltips();
-    }
+            
+            let tooltip = document.getElementById(smId + '-tooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.id = smId + '-tooltip';
+                tooltip.style.cssText = 'position: fixed; display: none; background: rgba(0,0,0,0.85); color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none; z-index: 10000; max-width: 300px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);';
+                document.body.appendChild(tooltip);
+            }
+            
+            function showTooltip(content, e) {
+                tooltip.innerHTML = content;
+                tooltip.style.display = 'block';
+                tooltip.style.left = (e.clientX + 15) + 'px';
+                tooltip.style.top = (e.clientY + 15) + 'px';
+            }
+            
+            function hideTooltip() {
+                tooltip.style.display = 'none';
+            }
+            
+            function updateTooltipPosition(e) {
+                tooltip.style.left = (e.clientX + 15) + 'px';
+                tooltip.style.top = (e.clientY + 15) + 'px';
+            }
+            
+            const states = svg.querySelectorAll('g.node');
+            states.forEach(state => {
+                const stateName = state.getAttribute('data-id');
+                if (!stateName || !tooltipData.nodes[stateName]) return;
+                
+                const tooltipContent = `<strong>${stateName}</strong><br>${tooltipData.nodes[stateName]}`;
+                
+                const rect = state.querySelector('rect.basic');
+                const textElements = state.querySelectorAll('text, foreignObject');
+                
+                if (rect) {
+                    rect.style.cursor = 'pointer';
+                    rect.addEventListener('mouseenter', (e) => showTooltip(tooltipContent, e));
+                    rect.addEventListener('mousemove', updateTooltipPosition);
+                    rect.addEventListener('mouseleave', hideTooltip);
+                }
+                
+                textElements.forEach(textEl => {
+                    textEl.style.cursor = 'pointer';
+                    textEl.addEventListener('mouseenter', (e) => showTooltip(tooltipContent, e));
+                    textEl.addEventListener('mousemove', updateTooltipPosition);
+                    textEl.addEventListener('mouseleave', hideTooltip);
+                });
+            });
+            
+            const edgeLabels = svg.querySelectorAll('g.edgeLabel');
+            edgeLabels.forEach(edgeLabel => {
+                const span = edgeLabel.querySelector('.edgeLabel');
+                if (!span) return;
+                
+                const triggerName = span.textContent.trim();
+                if (!triggerName) return;
+                
+                for (const [edgeKey, edgeData] of Object.entries(tooltipData.edges)) {
+                    if (edgeData.trigger === triggerName && edgeData.description) {
+                        const tooltipContent = `<strong>${triggerName}</strong><br>${edgeData.description}`;
+                        
+                        const rect = edgeLabel.querySelector('rect');
+                        const textElements = edgeLabel.querySelectorAll('text, foreignObject');
+                        
+                        if (rect) {
+                            rect.style.cursor = 'pointer';
+                            rect.addEventListener('mouseenter', (e) => showTooltip(tooltipContent, e));
+                            rect.addEventListener('mousemove', updateTooltipPosition);
+                            rect.addEventListener('mouseleave', hideTooltip);
+                        }
+                        
+                        textElements.forEach(textEl => {
+                            textEl.style.cursor = 'pointer';
+                            textEl.addEventListener('mouseenter', (e) => showTooltip(tooltipContent, e));
+                            textEl.addEventListener('mousemove', updateTooltipPosition);
+                            textEl.addEventListener('mouseleave', hideTooltip);
+                        });
+                        break;
+                    }
+                }
+            });
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', attachTooltips);
+        } else {
+            attachTooltips();
+        }
+    })();
+
 })();
 </script>
 </div>
@@ -8705,29 +8906,29 @@ stateDiagram-v2
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>✅ Interactive tooltips enabled for state machine diagram
+<pre>✅ Interactive tooltips enabled for 2 state machine diagrams
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f637fd0d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=77d6befe">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="6.-Operational-Scenarios">6. Operational Scenarios<a class="anchor-link" href="#6.-Operational-Scenarios">¶</a></h2><p>The timeline visualizations below depict key operational scenarios, showing the sequence of interactions between system components (lifelines) over time. Each marker represents an event (message, execution, or state change) at a specific timepoint.</p>
+<h3 id="3.6.-Operational-Scenarios">3.6. Operational Scenarios<a class="anchor-link" href="#3.6.-Operational-Scenarios">¶</a></h3><p>The concept of operations is validated through three representative usage scenarios that capture common user interactions with the system. The figure below illustrates these operational scenarios (hover over elements for detailed descriptions).</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=dee59397">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4f6c5322">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [83]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Display Operational Scenarios timeline visualizations</span>
@@ -8769,9 +8970,9 @@ Description: Scenario for the human-in-the-loop approval of an AI Warden task pr
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <div> <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script type="text/javascript">if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script> <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-<script charset="utf-8" crossorigin="anonymous" integrity="sha256-HUEFyfiTnZJxCxur99FjbKYTvKSzwDaD3/x5TqHpFu4=" src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script> <div class="plotly-graph-div" id="98e5bd45-b5e8-42da-9807-6ab17ee39af4" style="height:500px; width:100%;"></div> <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("98e5bd45-b5e8-42da-9807-6ab17ee39af4")) {                    Plotly.newPlot(                        "98e5bd45-b5e8-42da-9807-6ab17ee39af4",                        [{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[0,0],"y":[0,4.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_Life_AIWarden\u003c\u002fb\u003e\u003cbr\u003eAI Warden lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eAAT_Life_AIWarden\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[0],"y":[5],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[1,1],"y":[0,4.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003eDashboard lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eAAT_Life_Dashboard\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[1],"y":[5],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[2,2],"y":[0,4.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_Life_Operator\u003c\u002fb\u003e\u003cbr\u003eOperator lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eAAT_Life_Operator\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[2],"y":[5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_TP1\u003c\u002fb\u003e on \u003cb\u003eAAT_Life_AIWarden\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 AI Warden sends structured proposal to Dashboard\u003cbr\u003e\ud83d\udce7 Warden is AwaitingApproval while the proposal is pending.","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[0],"y":[4],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_TP2\u003c\u002fb\u003e on \u003cb\u003eAAT_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard displays AI proposal in chat interface (and shows Approve button)\u003cbr\u003e\ud83d\udce7 Dashboard presents AI proposal to Operator (chat + approve UI)","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[1],"y":[3],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_TP3\u003c\u002fb\u003e on \u003cb\u003eAAT_Life_Operator\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard displays AI proposal in chat interface (and shows Approve button)\u003cbr\u003e\ud83d\udce7 Dashboard processes approval and triggers D_approval to AI Warden\u003cbr\u003e\ud83d\udce7 Operator sends approval or rejection","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[2],"y":[2],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_TP4\u003c\u002fb\u003e on \u003cb\u003eAAT_Life_AIWarden\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard forwards approval to AI Warden\u003cbr\u003e\ud83d\udce7 Dashboard processes approval and triggers D_approval to AI Warden","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[0],"y":[1],"type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"annotations":[{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eAAT_TP1\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":4,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eAAT_TP2\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":3,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eAAT_TP3\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":2,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eAAT_TP4\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":1,"yanchor":"middle"}],"xaxis":{"showgrid":false,"showticklabels":false,"zeroline":false,"range":[-1,3]},"yaxis":{"showgrid":false,"showticklabels":false,"zeroline":false,"range":[-0.5,5.5]},"margin":{"l":100,"r":20,"t":100,"b":20},"title":{"text":"\u003cb\u003eApproveAIWardenTask\u003c\u002fb\u003e\u003cbr\u003e\u003csub\u003eScenario for the human-in-the-loop approval of an AI Warden task proposal.\u003c\u002fsub\u003e"},"plot_bgcolor":"white","height":500,"hovermode":"closest"},                        {"responsive": true}                    ).then(function(){
+<script charset="utf-8" crossorigin="anonymous" integrity="sha256-HUEFyfiTnZJxCxur99FjbKYTvKSzwDaD3/x5TqHpFu4=" src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script> <div class="plotly-graph-div" id="d28782d1-060b-419f-ac92-eb2fd062b304" style="height:500px; width:100%;"></div> <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("d28782d1-060b-419f-ac92-eb2fd062b304")) {                    Plotly.newPlot(                        "d28782d1-060b-419f-ac92-eb2fd062b304",                        [{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[0,0],"y":[0,4.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_Life_AIWarden\u003c\u002fb\u003e\u003cbr\u003eAI Warden lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eAAT_Life_AIWarden\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[0],"y":[5],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[1,1],"y":[0,4.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003eDashboard lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eAAT_Life_Dashboard\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[1],"y":[5],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[2,2],"y":[0,4.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_Life_Operator\u003c\u002fb\u003e\u003cbr\u003eOperator lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eAAT_Life_Operator\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[2],"y":[5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_TP1\u003c\u002fb\u003e on \u003cb\u003eAAT_Life_AIWarden\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 AI Warden sends structured proposal to Dashboard\u003cbr\u003e\ud83d\udce7 Warden is AwaitingApproval while the proposal is pending.","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[0],"y":[4],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_TP2\u003c\u002fb\u003e on \u003cb\u003eAAT_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard displays AI proposal in chat interface (and shows Approve button)\u003cbr\u003e\ud83d\udce7 Dashboard presents AI proposal to Operator (chat + approve UI)","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[1],"y":[3],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_TP3\u003c\u002fb\u003e on \u003cb\u003eAAT_Life_Operator\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard displays AI proposal in chat interface (and shows Approve button)\u003cbr\u003e\ud83d\udce7 Dashboard processes approval and triggers D_approval to AI Warden\u003cbr\u003e\ud83d\udce7 Operator sends approval or rejection","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[2],"y":[2],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eAAT_TP4\u003c\u002fb\u003e on \u003cb\u003eAAT_Life_AIWarden\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard forwards approval to AI Warden\u003cbr\u003e\ud83d\udce7 Dashboard processes approval and triggers D_approval to AI Warden","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[0],"y":[1],"type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"annotations":[{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eAAT_TP1\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":4,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eAAT_TP2\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":3,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eAAT_TP3\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":2,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eAAT_TP4\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":1,"yanchor":"middle"}],"xaxis":{"showgrid":false,"showticklabels":false,"zeroline":false,"range":[-1,3]},"yaxis":{"showgrid":false,"showticklabels":false,"zeroline":false,"range":[-0.5,5.5]},"margin":{"l":100,"r":20,"t":100,"b":20},"title":{"text":"\u003cb\u003eApproveAIWardenTask\u003c\u002fb\u003e\u003cbr\u003e\u003csub\u003eScenario for the human-in-the-loop approval of an AI Warden task proposal.\u003c\u002fsub\u003e"},"plot_bgcolor":"white","height":500,"hovermode":"closest"},                        {"responsive": true}                    ).then(function(){
                             
-var gd = document.getElementById('98e5bd45-b5e8-42da-9807-6ab17ee39af4');
+var gd = document.getElementById('d28782d1-060b-419f-ac92-eb2fd062b304');
 var x = new MutationObserver(function (mutations, observer) {{
         var display = window.getComputedStyle(gd).display;
         if (!display || display === 'none') {{
@@ -8812,9 +9013,9 @@ Description: Scenario showing flow when a critical notification is produced and 
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <div> <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script type="text/javascript">if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script> <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-<script charset="utf-8" crossorigin="anonymous" integrity="sha256-HUEFyfiTnZJxCxur99FjbKYTvKSzwDaD3/x5TqHpFu4=" src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script> <div class="plotly-graph-div" id="5a019b4d-636e-48db-8f51-7aecfb871378" style="height:550px; width:100%;"></div> <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("5a019b4d-636e-48db-8f51-7aecfb871378")) {                    Plotly.newPlot(                        "5a019b4d-636e-48db-8f51-7aecfb871378",                        [{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[0,0],"y":[0,5.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_Life_AIWarden\u003c\u002fb\u003e\u003cbr\u003eAI Fire Warden lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eRCN_Life_AIWarden\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[0],"y":[6],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[1,1],"y":[0,5.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003eDashboard lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eRCN_Life_Dashboard\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[1],"y":[6],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[2,2],"y":[0,5.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_Life_FireCloud\u003c\u002fb\u003e\u003cbr\u003eFire Cloud lifeline (source of telemetry\u002falerts)","mode":"text","showlegend":false,"text":["\u003cb\u003eRCN_Life_FireCloud\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[2],"y":[6],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[3,3],"y":[0,5.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_Life_Operator\u003c\u002fb\u003e\u003cbr\u003eOperator lifeline (human in control-room or field UI)","mode":"text","showlegend":false,"text":["\u003cb\u003eRCN_Life_Operator\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[3],"y":[6],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_TP1\u003c\u002fb\u003e on \u003cb\u003eRCN_Life_FireCloud\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 AI Warden is Observing at scenario start\u003cbr\u003e\ud83d\udce7 FireCloud sends critical alert to Dashboard","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[2],"y":[5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_TP2\u003c\u002fb\u003e on \u003cb\u003eRCN_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard displays alert to Operator\u003cbr\u003e\ud83d\udce7 Dashboard is in Monitoring when it receives the alert\u003cbr\u003e\ud83d\udce7 Dashboard updates map visualization after receiving alert","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[1],"y":[4],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_TP3\u003c\u002fb\u003e on \u003cb\u003eRCN_Life_Operator\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Operator acknowledges alert (approval or ACK)","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[3],"y":[3],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_TP4\u003c\u002fb\u003e on \u003cb\u003eRCN_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard forwards acknowledgment to AI Warden (if relevant) and FireCloud\u003cbr\u003e\ud83d\udce7 Dashboard updates map visualization after receiving alert","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[1],"y":[2],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_TP5\u003c\u002fb\u003e on \u003cb\u003eRCN_Life_AIWarden\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 AI Warden receives acknowledgment and may update internal state \u002f telemetry","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[0],"y":[1],"type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"annotations":[{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eRCN_TP1\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":5,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eRCN_TP2\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":4,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eRCN_TP3\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":3,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eRCN_TP4\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":2,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eRCN_TP5\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":1,"yanchor":"middle"}],"xaxis":{"showgrid":false,"showticklabels":false,"zeroline":false,"range":[-1,4]},"yaxis":{"showgrid":false,"showticklabels":false,"zeroline":false,"range":[-0.5,6.5]},"margin":{"l":100,"r":20,"t":100,"b":20},"title":{"text":"\u003cb\u003eRespondToCriticalNotification\u003c\u002fb\u003e\u003cbr\u003e\u003csub\u003eScenario showing flow when a critical notification is produced and acknowledged.\u003c\u002fsub\u003e"},"plot_bgcolor":"white","height":550,"hovermode":"closest"},                        {"responsive": true}                    ).then(function(){
+<script charset="utf-8" crossorigin="anonymous" integrity="sha256-HUEFyfiTnZJxCxur99FjbKYTvKSzwDaD3/x5TqHpFu4=" src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script> <div class="plotly-graph-div" id="967ce266-a16c-4efb-a190-efe8bd8e1bc5" style="height:550px; width:100%;"></div> <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("967ce266-a16c-4efb-a190-efe8bd8e1bc5")) {                    Plotly.newPlot(                        "967ce266-a16c-4efb-a190-efe8bd8e1bc5",                        [{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[0,0],"y":[0,5.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_Life_AIWarden\u003c\u002fb\u003e\u003cbr\u003eAI Fire Warden lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eRCN_Life_AIWarden\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[0],"y":[6],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[1,1],"y":[0,5.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003eDashboard lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eRCN_Life_Dashboard\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[1],"y":[6],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[2,2],"y":[0,5.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_Life_FireCloud\u003c\u002fb\u003e\u003cbr\u003eFire Cloud lifeline (source of telemetry\u002falerts)","mode":"text","showlegend":false,"text":["\u003cb\u003eRCN_Life_FireCloud\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[2],"y":[6],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[3,3],"y":[0,5.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_Life_Operator\u003c\u002fb\u003e\u003cbr\u003eOperator lifeline (human in control-room or field UI)","mode":"text","showlegend":false,"text":["\u003cb\u003eRCN_Life_Operator\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[3],"y":[6],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_TP1\u003c\u002fb\u003e on \u003cb\u003eRCN_Life_FireCloud\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 AI Warden is Observing at scenario start\u003cbr\u003e\ud83d\udce7 FireCloud sends critical alert to Dashboard","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[2],"y":[5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_TP2\u003c\u002fb\u003e on \u003cb\u003eRCN_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard displays alert to Operator\u003cbr\u003e\ud83d\udce7 Dashboard is in Monitoring when it receives the alert\u003cbr\u003e\ud83d\udce7 Dashboard updates map visualization after receiving alert","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[1],"y":[4],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_TP3\u003c\u002fb\u003e on \u003cb\u003eRCN_Life_Operator\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Operator acknowledges alert (approval or ACK)","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[3],"y":[3],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_TP4\u003c\u002fb\u003e on \u003cb\u003eRCN_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard forwards acknowledgment to AI Warden (if relevant) and FireCloud\u003cbr\u003e\ud83d\udce7 Dashboard updates map visualization after receiving alert","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[1],"y":[2],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eRCN_TP5\u003c\u002fb\u003e on \u003cb\u003eRCN_Life_AIWarden\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 AI Warden receives acknowledgment and may update internal state \u002f telemetry","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[0],"y":[1],"type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"annotations":[{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eRCN_TP1\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":5,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eRCN_TP2\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":4,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eRCN_TP3\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":3,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eRCN_TP4\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":2,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eRCN_TP5\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":1,"yanchor":"middle"}],"xaxis":{"showgrid":false,"showticklabels":false,"zeroline":false,"range":[-1,4]},"yaxis":{"showgrid":false,"showticklabels":false,"zeroline":false,"range":[-0.5,6.5]},"margin":{"l":100,"r":20,"t":100,"b":20},"title":{"text":"\u003cb\u003eRespondToCriticalNotification\u003c\u002fb\u003e\u003cbr\u003e\u003csub\u003eScenario showing flow when a critical notification is produced and acknowledged.\u003c\u002fsub\u003e"},"plot_bgcolor":"white","height":550,"hovermode":"closest"},                        {"responsive": true}                    ).then(function(){
                             
-var gd = document.getElementById('5a019b4d-636e-48db-8f51-7aecfb871378');
+var gd = document.getElementById('967ce266-a16c-4efb-a190-efe8bd8e1bc5');
 var x = new MutationObserver(function (mutations, observer) {{
         var display = window.getComputedStyle(gd).display;
         if (!display || display === 'none') {{
@@ -8855,9 +9056,9 @@ Description: Scenario demonstrating an Operator viewing historical fire states o
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <div> <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script type="text/javascript">if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script> <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-<script charset="utf-8" crossorigin="anonymous" integrity="sha256-HUEFyfiTnZJxCxur99FjbKYTvKSzwDaD3/x5TqHpFu4=" src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script> <div class="plotly-graph-div" id="2af96eff-403b-4205-bf3a-fcca881bf0fb" style="height:450px; width:100%;"></div> <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("2af96eff-403b-4205-bf3a-fcca881bf0fb")) {                    Plotly.newPlot(                        "2af96eff-403b-4205-bf3a-fcca881bf0fb",                        [{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[0,0],"y":[0,3.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eVHD_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003eDashboard lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eVHD_Life_Dashboard\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[0],"y":[4],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[1,1],"y":[0,3.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eVHD_Life_FireCloud\u003c\u002fb\u003e\u003cbr\u003eFire Cloud lifeline (source of historical data)","mode":"text","showlegend":false,"text":["\u003cb\u003eVHD_Life_FireCloud\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[1],"y":[4],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[2,2],"y":[0,3.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eVHD_Life_Operator\u003c\u002fb\u003e\u003cbr\u003eOperator lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eVHD_Life_Operator\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[2],"y":[4],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eVHD_TP1\u003c\u002fb\u003e on \u003cb\u003eVHD_Life_Operator\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Operator requests historical data via dashboard UI","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[2],"y":[3],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eVHD_TP2\u003c\u002fb\u003e on \u003cb\u003eVHD_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard forwards history request to FireCloud\u003cbr\u003e\ud83d\udce7 NetworkInterface issues history fetch to FireCloud (A1).","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[0],"y":[2],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eVHD_TP3\u003c\u002fb\u003e on \u003cb\u003eVHD_Life_FireCloud\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard is in HistoricalReview while rendering and user inspects past state.\u003cbr\u003e\ud83d\udce7 Dashboard parses history and updates the map\u002fhistorical layer (A2\u002fA3).\u003cbr\u003e\ud83d\udce7 Dashboard renders historical data on the map\u002ftime-slider\u003cbr\u003e\ud83d\udce7 FireCloud returns historical telemetry to Dashboard\u003cbr\u003e\ud83d\udce7 NetworkInterface issues history fetch to FireCloud (A1).","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[1],"y":[1],"type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"annotations":[{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eVHD_TP1\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":3,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eVHD_TP2\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":2,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eVHD_TP3\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":1,"yanchor":"middle"}],"xaxis":{"showgrid":false,"showticklabels":false,"zeroline":false,"range":[-1,3]},"yaxis":{"showgrid":false,"showticklabels":false,"zeroline":false,"range":[-0.5,4.5]},"margin":{"l":100,"r":20,"t":100,"b":20},"title":{"text":"\u003cb\u003eViewHistoricalData\u003c\u002fb\u003e\u003cbr\u003e\u003csub\u003eScenario demonstrating an Operator viewing historical fire states on the dashboard.\u003c\u002fsub\u003e"},"plot_bgcolor":"white","height":450,"hovermode":"closest"},                        {"responsive": true}                    ).then(function(){
+<script charset="utf-8" crossorigin="anonymous" integrity="sha256-HUEFyfiTnZJxCxur99FjbKYTvKSzwDaD3/x5TqHpFu4=" src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script> <div class="plotly-graph-div" id="db5cc1d8-656c-49da-8b44-50c7a2706fcf" style="height:450px; width:100%;"></div> <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("db5cc1d8-656c-49da-8b44-50c7a2706fcf")) {                    Plotly.newPlot(                        "db5cc1d8-656c-49da-8b44-50c7a2706fcf",                        [{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[0,0],"y":[0,3.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eVHD_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003eDashboard lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eVHD_Life_Dashboard\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[0],"y":[4],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[1,1],"y":[0,3.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eVHD_Life_FireCloud\u003c\u002fb\u003e\u003cbr\u003eFire Cloud lifeline (source of historical data)","mode":"text","showlegend":false,"text":["\u003cb\u003eVHD_Life_FireCloud\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[1],"y":[4],"type":"scatter"},{"hoverinfo":"skip","line":{"color":"lightgray","dash":"dot","width":2},"mode":"lines","showlegend":false,"x":[2,2],"y":[0,3.5],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eVHD_Life_Operator\u003c\u002fb\u003e\u003cbr\u003eOperator lifeline","mode":"text","showlegend":false,"text":["\u003cb\u003eVHD_Life_Operator\u003c\u002fb\u003e"],"textfont":{"color":"darkblue","size":12},"textposition":"top center","x":[2],"y":[4],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eVHD_TP1\u003c\u002fb\u003e on \u003cb\u003eVHD_Life_Operator\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Operator requests historical data via dashboard UI","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[2],"y":[3],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eVHD_TP2\u003c\u002fb\u003e on \u003cb\u003eVHD_Life_Dashboard\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard forwards history request to FireCloud\u003cbr\u003e\ud83d\udce7 NetworkInterface issues history fetch to FireCloud (A1).","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[0],"y":[2],"type":"scatter"},{"hoverinfo":"text","hovertext":"\u003cb\u003eVHD_TP3\u003c\u002fb\u003e on \u003cb\u003eVHD_Life_FireCloud\u003c\u002fb\u003e\u003cbr\u003e\ud83d\udce7 Dashboard is in HistoricalReview while rendering and user inspects past state.\u003cbr\u003e\ud83d\udce7 Dashboard parses history and updates the map\u002fhistorical layer (A2\u002fA3).\u003cbr\u003e\ud83d\udce7 Dashboard renders historical data on the map\u002ftime-slider\u003cbr\u003e\ud83d\udce7 FireCloud returns historical telemetry to Dashboard\u003cbr\u003e\ud83d\udce7 NetworkInterface issues history fetch to FireCloud (A1).","marker":{"color":"steelblue","line":{"color":"darkblue","width":2},"size":15,"symbol":"circle"},"mode":"markers","showlegend":false,"x":[1],"y":[1],"type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"annotations":[{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eVHD_TP1\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":3,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eVHD_TP2\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":2,"yanchor":"middle"},{"font":{"color":"darkgreen","size":10},"showarrow":false,"text":"\u003cb\u003eVHD_TP3\u003c\u002fb\u003e","x":-0.5,"xanchor":"right","y":1,"yanchor":"middle"}],"xaxis":{"showgrid":false,"showticklabels":false,"zeroline":false,"range":[-1,3]},"yaxis":{"showgrid":false,"showticklabels":false,"zeroline":false,"range":[-0.5,4.5]},"margin":{"l":100,"r":20,"t":100,"b":20},"title":{"text":"\u003cb\u003eViewHistoricalData\u003c\u002fb\u003e\u003cbr\u003e\u003csub\u003eScenario demonstrating an Operator viewing historical fire states on the dashboard.\u003c\u002fsub\u003e"},"plot_bgcolor":"white","height":450,"hovermode":"closest"},                        {"responsive": true}                    ).then(function(){
                             
-var gd = document.getElementById('2af96eff-403b-4205-bf3a-fcca881bf0fb');
+var gd = document.getElementById('db5cc1d8-656c-49da-8b44-50c7a2706fcf');
 var x = new MutationObserver(function (mutations, observer) {{
         var display = window.getComputedStyle(gd).display;
         if (!display || display === 'none') {{
@@ -8893,6 +9094,37 @@ if (outputEl) {{
 </div>
 </div>
 </div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4e09fd51">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+<h2 id="4.-Demonstration-and-Evaluation">4. Demonstration and Evaluation<a class="anchor-link" href="#4.-Demonstration-and-Evaluation">¶</a></h2><p>To illustrate the dashboard in real operation, we present a four-part demonstration sequence drawn from our scenario exercises:</p>
+<h3 id="Main-Page">Main Page<a class="anchor-link" href="#Main-Page">¶</a></h3><p>The main page serves as the central operator hub, aggregating live mission status, recommended actions, and a persistent event log. It surfaces both ongoing scenario data and urgent notifications, offering field commanders a real-time situational snapshot. See Figure 2.</p>
+<p><img alt="Main Page" src="./Images/Main_Dashboard.png"/>
+Figure 2: Main page dashboard interface showing active hazard zones, recent scenario logs, and summary status indicators.</p>
+<h3 id="Fire-Warden-Chat-Interface">Fire Warden Chat Interface<a class="anchor-link" href="#Fire-Warden-Chat-Interface">¶</a></h3><p>A real-time chat module connects operators with the AI Fire Warden subsystem. Through this interactive interface, operators exchange deployment preferences, receive AI-generated recommendations, and log advisory exchanges for future review. The chat design balances clarity and immediacy while ensuring critical information is never lost. See Figure 3.</p>
+<p><img alt="Fire Warden Chat Interface" src="./Images/Fire_Warden.png"/>
+Figure 3: Fire Warden chat interface allowing for interactive conversation between the operator and the AI planning engine.</p>
+<h3 id="Live-Map">Live Map<a class="anchor-link" href="#Live-Map">¶</a></h3><p>The live map display visualizes current wildfire perimeters, hazard overlays and deployed assets as supplied by FireCloud analytics and AI Fire Warden planning. Map elements update in near real-time as new sensor, weather, or planning data arrives, demonstrating the dashboard’s efficacy in guiding tactical response. See Figure 4.</p>
+<p><img alt="Live Map" src="./Images/Live_Map.png"/>
+Figure 4: Live map display illustrating wildfire boundaries and assets.</p>
+<h3 id="Notifications">Notifications<a class="anchor-link" href="#Notifications">¶</a></h3><p>The notification module synthesizes alerts from both Fire Warden and FireCloud, prioritizing actionable items such as newly detected hazards, changes in asset deployment, and time-critical operator instructions. Its layout and filtering functionality act to minimize operator overload. See Figure 5.</p>
+<p><img alt="Notifications" src="./Images/Notifications.png"/>
+Figure 5: Notification panel displaying live hazard alerts, AI deployment advisories, and scenario-linked updates.</p>
+<h3 id="Evaluation">Evaluation<a class="anchor-link" href="#Evaluation">¶</a></h3><p>Our system currently relies on mock data with respect to the Fire Cloud and Fire Warden interactions since these aforementioned systems are not completely developed. As a result, quantitative analysis regarding latency can not be explored currently. However, our system can be evaluated qualitatively. Namely, our system is able to properly execute its described capabilities by enabling real-time visualizations of fire and drone data (even if this data is purely mock data), ensuring key situational developments are made aware to users via notifications, and finally allowing fire an easy-to-use interface with the (mock) Fire Warden.</p>
+<hr/>
+<h2 id="5.-Conclusion-and-Future-Work">5. Conclusion and Future Work<a class="anchor-link" href="#5.-Conclusion-and-Future-Work">¶</a></h2><p>Our Mission Control Dashboard project demonstrates how technical vision, collaborative engineering, and persistent operator feedback can converge in life-critical wildfire response scenarios. By integrating advanced sensor fusion, AI-driven planning, and human oversight into a seamless interface, we established both the technical and organizational tools for more agile, impactful disaster operations. The dashboard not only delivered on its foundational goals but also opened new avenues for cross-team coordination and continuous improvement.</p>
+<h3 id="Future-Development-Directions">Future Development Directions<a class="anchor-link" href="#Future-Development-Directions">¶</a></h3><p>The current implementation relies on mock data for prototyping purposes. The immediate priority for future work involves integration with production external systems, specifically the <strong>Fire Cloud</strong> data infrastructure for real-time fire and drone telemetry, and the <strong>Fire Warden</strong> AI service for tactical analysis and planning recommendations. These integrations will enable the dashboard to operate with live sensor data and autonomous decision-making capabilities.</p>
+<p>Beyond core system integration, several functional enhancements would significantly improve operational effectiveness. <strong>Plan visualization on the map</strong> would allow operators to preview AI-generated tactical plans spatially - for example, displaying proposed drone flight paths or deployment zones directly on the live map interface before approval. <strong>Satellite tracking</strong> capabilities could be added to visualize orbital assets alongside ground-based sensors, providing operators with complete awareness of all data collection resources. Finally, <strong>direct drone command and control</strong> through the map interface would enable operators to issue movement orders, recall commands, or mission reassignments by selecting drone markers and interacting with a control panel, streamlining the command workflow for time-critical scenarios.</p>
+<hr/>
+<h2 id="References">References<a class="anchor-link" href="#References">¶</a></h2><p>[1] Fire Information for Resource Management System US/Canada. Nasa. <a href="https://firms2.modaps.eosdis.nasa.gov/usfs/">https://firms2.modaps.eosdis.nasa.gov/usfs/</a>.</p>
+</div>
+</div>
+</div>
+</div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c88a8b4b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
@@ -8900,24 +9132,13 @@ if (outputEl) {{
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <hr/>
-<h2 id="Conclusion">Conclusion<a class="anchor-link" href="#Conclusion">¶</a></h2><p>This report has presented a comprehensive analysis of the Mission Control system architecture through multiple perspectives:</p>
-<ul>
-<li><strong>Requirements</strong>: Formal system requirements with stakeholder traceability</li>
-<li><strong>Capabilities</strong>: Mapping of requirements to system capabilities and sub-capabilities</li>
-<li><strong>Entities</strong>: Assignment of capabilities to specific system actors/components</li>
-<li><strong>Activities</strong>: Data flow between system processes</li>
-<li><strong>State Machines</strong>: Behavioral models showing state transitions and triggers</li>
-<li><strong>Scenarios</strong>: Temporal sequences of system interactions</li>
-</ul>
-<p>These visualizations provide a complete view of the system design, enabling stakeholders to understand both the structural and behavioral aspects of the Mission Control platform.</p>
-<hr/>
-<h3 id="Export-Instructions">Export Instructions<a class="anchor-link" href="#Export-Instructions">¶</a></h3><p>To export this notebook as an interactive HTML report:</p>
+<h2 id="Export-Instructions">Export Instructions<a class="anchor-link" href="#Export-Instructions">¶</a></h2><p>To export this notebook as an interactive HTML report:</p>
 <div class="highlight"><pre><span></span>jupyter<span class="w"> </span>nbconvert<span class="w"> </span>--to<span class="w"> </span>html<span class="w"> </span>mission_control_report.ipynb
 </pre></div>
 <p>The exported HTML will preserve:</p>
 <ul>
 <li>✅ All interactive Plotly graphs (pan, zoom, hover)</li>
-<li>✅ Mermaid state machine diagram with hover tooltips</li>
+<li>✅ Mermaid diagrams with hover tooltips</li>
 <li>✅ All markdown formatting and narrative text</li>
 <li>✅ Responsive visualizations</li>
 </ul>
